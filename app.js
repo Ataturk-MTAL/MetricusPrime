@@ -21,7 +21,8 @@
   const ETIKET_RENGI = "F2F2F2";
   const YAZI_TIPI = "Times New Roman";
   const EN_AZ_KONU_SATIRI = 10;
-  const TUTUM_PUANI = 20;
+  const TUTUM_PUANI = 20; // hazır maddelerin puanı
+  const EN_COK_PUAN = 100;
 
   // (kısa ad, zümre ölçüt metni, puan, [çok iyi, iyi, orta, geliştirilmeli])
   const OLCUTLER = [
@@ -253,7 +254,8 @@
   /**
    * @param docx  docx.js kütüphanesi
    * @param bilgi {okul, ders, egitimYili, donem, verilis, planTeslim, araKontrol, teslim,
-   *               ogretmenler: string[], mudur, dersTuru: "atolye"|"sinif", tutum: string[]}
+   *               ogretmenler: string[], dersTuru: "atolye"|"sinif", tutum: {metin, puan}[]}
+   *              Okul müdürünün adı belgeye yazılmaz; imza yerinde elle yazılır.
    * @param siniflar sinifListesiOku çıktılarının dizisi (şube başına bir tane)
    */
   function belgeOlustur(docx, bilgi, siniflar) {
@@ -318,7 +320,7 @@
       ...KURALLAR.map((k) => y.paragraf(`• ${k}`, { girinti: 0.4 })),
       y.paragraf("", { sonra: 120 }),
       ...imzaSatirlari,
-      y.paragraf(`.... / .... / 20....\n**Uygundur**\n\n${nokta(bilgi.mudur) === "…………" ? "[Adı SOYADI]" : nokta(bilgi.mudur)}\nOkul Müdürü`, { hiza: ORTA }),
+      y.paragraf(".... / .... / 20....\n**Uygundur**\n\n\n……………………………………\nOkul Müdürü", { hiza: ORTA }),
     ]);
 
     // 2. Konu listesi ve teknik sorular (öğretmen Word'de doldurur)
@@ -399,11 +401,11 @@
     ]);
 
     // 6. Sınıf çizelgeleri (yatay)
-    function topluCizelge(sinif, alt, olcutBasliklari, aciklama, konuSutunu) {
+    function topluCizelge(sinif, alt, olcutBasliklari, aciklama, konuSutunu, toplamPuan = EN_COK_PUAN) {
       const sabit = [1, 1.4, 5.4].concat(konuSutunu ? [1.3] : []);
       const TOPLAM_CM = 1.6;
       const olcutCm = (YATAY_GENISLIK_CM - sabit.reduce((a, b) => a + b, 0) - TOPLAM_CM) / olcutBasliklari.length;
-      const basliklar = ["S.No", "Öğr. No", "Adı Soyadı"].concat(konuSutunu ? ["Konu No"] : [], olcutBasliklari, ["TOPLAM\n(100)"]);
+      const basliklar = ["S.No", "Öğr. No", "Adı Soyadı"].concat(konuSutunu ? ["Konu No"] : [], olcutBasliklari, [`TOPLAM\n(${toplamPuan})`]);
       const genislikler = sabit.concat(olcutBasliklari.map(() => olcutCm), [TOPLAM_CM]);
       const satirlar = sinif.ogrenciler.map((o, i) => [i + 1, o.no, `${o.ad} ${o.soyad}`]
         .concat(konuSutunu ? [i + 1] : [], olcutBasliklari.map(() => ""), [""]));
@@ -421,25 +423,28 @@
 
     // 7. Tutum ve davranış ölçeği + çizelgeleri
     const atolye = bilgi.dersTuru !== "sinif";
-    const tutum = (bilgi.tutum && bilgi.tutum.some((t) => t.trim()))
-      ? bilgi.tutum.map((t) => t.trim()) : TUTUM_VARSAYILAN[atolye ? "atolye" : "sinif"];
+    const tutum = tutumDuzenle(bilgi.tutum, atolye ? "atolye" : "sinif");
+    const tutumToplami = tutumToplam(tutum);
+    if (tutumToplami > EN_COK_PUAN) {
+      throw new Error(`Tutum ölçeğinin toplam puanı ${tutumToplami}; ${EN_COK_PUAN} puanı geçemez.`);
+    }
     bolumEkle([
       baslik(`${atolye ? "ATÖLYE" : "SINIF"} İÇİ TUTUM VE DAVRANIŞ PERFORMANS ÖLÇEĞİ`),
       y.paragraf(`Zümre kararı gereği birinci performans notu; öğrencinin ${atolye ? "atölye" : "sınıf"} içi tutum ve davranışları, derse katılımı ve ders araç-gereçlerini düzenli getirmesi esas alınarak dönem boyunca yapılan gözlemlerle verilir.`, { boyut: 9.5 }),
       y.tablo(["No", "ÖĞRENCİDE GÖZLENECEK ÖZELLİKLER", "PUANI"],
-        tutum.map((metin, i) => [i + 1, metin, TUTUM_PUANI]), [1, 14.4, 2],
+        tutum.map((madde, i) => [i + 1, madde.metin, madde.puan]), [1, 14.4, 2],
         {
           boyut: 10, ortala: [0, 2],
           ekSatirlar: [y.satirYap([
             y.hucreYap("TOPLAM", 15.4, { boyut: 10, kalin: true, yay: 2 }),
-            y.hucreYap(String(TUTUM_PUANI * tutum.length), 2, { boyut: 10, kalin: true, ortala: true }),
+            y.hucreYap(String(tutumToplami), 2, { boyut: 10, kalin: true, ortala: true }),
           ])],
         }),
     ]);
     for (const sinif of siniflar) {
       topluCizelge(sinif, "TUTUM VE DAVRANIŞ SINIF DEĞERLENDİRME ÇİZELGESİ",
-        tutum.map((_, i) => `Ölçüt ${i + 1}\n(${TUTUM_PUANI})`),
-        "Ölçüt numaraları bir önceki sayfadaki ölçekle aynıdır.", false);
+        tutum.map((madde, i) => `Ölçüt ${i + 1}\n(${madde.puan})`),
+        "Ölçüt numaraları bir önceki sayfadaki ölçekle aynıdır.", false, tutumToplami);
     }
 
     return new Document({
@@ -450,11 +455,28 @@
     });
   }
 
+  /** Hazır maddeleri {metin, puan} biçiminde verir. */
+  function tutumVarsayilan(dersTuru) {
+    return TUTUM_VARSAYILAN[dersTuru === "sinif" ? "sinif" : "atolye"].map((metin) => ({ metin, puan: TUTUM_PUANI }));
+  }
+
+  /** Boş maddeleri atar, puanı tam sayıya çevirir; hiç madde yoksa hazır maddeleri kullanır. */
+  function tutumDuzenle(tutum, dersTuru) {
+    const dolu = (tutum || [])
+      .map((madde) => ({ metin: String(madde.metin || "").trim(), puan: Math.max(0, Math.round(Number(madde.puan) || 0)) }))
+      .filter((madde) => madde.metin);
+    return dolu.length ? dolu : tutumVarsayilan(dersTuru);
+  }
+
+  function tutumToplam(tutum) {
+    return tutum.reduce((toplam, madde) => toplam + (Math.max(0, Math.round(Number(madde.puan) || 0))), 0);
+  }
+
   function dosyaAdi(bilgi, siniflar) {
     const ders = (bilgi.ders || "ders").trim().replace(/[\\/:*?"<>|]+/g, " ").replace(/\s+/g, "-");
     const subeler = siniflar.map((s) => s.sube.replace("/", "")).join("-");
     return `Performans-Gorevi-${ders}${subeler ? "-" + subeler : ""}.docx`;
   }
 
-  return { sinifListesiOku, belgeOlustur, dosyaAdi, TUTUM_VARSAYILAN };
+  return { sinifListesiOku, belgeOlustur, dosyaAdi, tutumVarsayilan, tutumToplam, EN_COK_PUAN };
 });

@@ -40,8 +40,16 @@
   button { font: inherit; border-radius: 8px; border: 1px solid var(--cizgi); background: var(--kart); color: var(--yazi); padding: 8px 14px; cursor: pointer; }
   button.ana { background: var(--vurgu); color: var(--vurgu-yazi); border-color: var(--vurgu); font-weight: 700; padding: 12px 20px; font-size: 1.05rem; width: 100%; }
   button:disabled { opacity: .5; cursor: not-allowed; }
-  .ogretmen { display: flex; gap: 8px; margin-bottom: 8px; }
-  .ogretmen button { flex: none; }
+  .ogretmen, .madde { display: flex; gap: 8px; margin-bottom: 8px; }
+  .ogretmen button, .madde button { flex: none; }
+  .madde input[type=number] { flex: none; width: 5.2em; padding: 9px 8px; border: 1px solid var(--cizgi); border-radius: 8px;
+    background: var(--zemin); color: var(--yazi); font: inherit; text-align: center; }
+  .madde-baslik { display: flex; gap: 8px; font-weight: 600; font-size: .9rem; margin: 12px 0 4px; }
+  .madde-baslik span:first-child { flex: 1; }
+  .madde-baslik span:nth-child(2) { width: 5.2em; text-align: center; }
+  .madde-baslik span:last-child { width: 3.4em; }
+  #tutumToplam { font-weight: 700; margin: 10px 0 0; }
+  #tutumToplam.asim { color: var(--hata); }
   .sube { border: 1px solid var(--cizgi); border-radius: 8px; margin-top: 12px; }
   .sube summary { padding: 10px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .sube table { width: 100%; border-collapse: collapse; font-size: .9rem; }
@@ -107,8 +115,7 @@
     <label id="ogretmenEtiket">Ders öğretmenleri</label>
     <div id="ogretmenler" aria-labelledby="ogretmenEtiket"></div>
     <button type="button" id="ogretmenEkle">+ Öğretmen ekle</button>
-    <label for="mudur">Okul müdürü</label>
-    <input type="text" id="mudur" placeholder="Adı SOYADI">
+    <p class="ipucu">Okul müdürünün adı belgeye yazılmaz; onay bölümünde elle yazılması için boş bırakılır.</p>
   </section>
 
   <section aria-labelledby="b4">
@@ -117,9 +124,11 @@
       <label><input type="radio" name="dersTuru" value="atolye" checked> Atölye dersi</label>
       <label><input type="radio" name="dersTuru" value="sinif"> Sınıf / laboratuvar dersi</label>
     </div>
-    <label for="tutum">Gözlenecek özellikler (her satır bir madde, her biri 20 puan)</label>
-    <textarea id="tutum" spellcheck="true"></textarea>
-    <p class="ipucu">Hazır maddeleri olduğu gibi bırakabilir ya da dersinize göre değiştirebilirsiniz.</p>
+    <div class="madde-baslik" aria-hidden="true"><span>Gözlenecek özellik</span><span>Puan</span><span></span></div>
+    <div id="tutum"></div>
+    <button type="button" id="maddeEkle">+ Madde ekle</button>
+    <p id="tutumToplam" role="status"></p>
+    <p class="ipucu">Hazır maddeleri olduğu gibi bırakabilir ya da dersinize göre değiştirebilirsiniz. Toplam puan 100'ü geçemez.</p>
   </section>
 
   <button type="button" class="ana" id="olustur" disabled>Word belgesini oluştur</button>
@@ -144,7 +153,7 @@
       <dt>Kaynak kod</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime" rel="noopener">github.com/Ataturk-MTAL/MetricusPrime</a></dd>
       <dt>Sorun bildirme</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime/issues" rel="noopener">GitHub üzerinden</a></dd>
       <dt>Kullanılan kütüphaneler</dt><dd>SheetJS (Apache-2.0), docx (MIT)</dd>
-      <dt>Sürüm</dt><dd>1.1 · Ekim 2026</dd>
+      <dt>Sürüm</dt><dd>1.2 · Ekim 2026</dd>
     </dl>
   </section>
 
@@ -157,8 +166,8 @@
 <script>
 (function () {
   "use strict";
-  const KAYIT_ANAHTARI = "metricusprime.form.v1";
-  const METIN_ALANLARI = ["okul", "ders", "egitimYili", "donem", "verilis", "planTeslim", "araKontrol", "teslim", "mudur"];
+  const KAYIT_ANAHTARI = "metricusprime.form.v2";
+  const METIN_ALANLARI = ["okul", "ders", "egitimYili", "donem", "verilis", "planTeslim", "araKontrol", "teslim"];
   const PG = window.PerformansGorevi;
   const $ = (id) => document.getElementById(id);
   let siniflar = [];
@@ -171,7 +180,10 @@
     const bilgi = Object.fromEntries(METIN_ALANLARI.map((id) => [id, $(id).value]));
     bilgi.ogretmenler = [...document.querySelectorAll("#ogretmenler input")].map((i) => i.value);
     bilgi.dersTuru = dersTuru();
-    bilgi.tutum = $("tutum").value.split("\n").map((s) => s.trim()).filter(Boolean);
+    bilgi.tutum = [...document.querySelectorAll("#tutum .madde")].map((satir) => ({
+      metin: satir.querySelector("input[type=text]").value,
+      puan: satir.querySelector("input[type=number]").value,
+    }));
     return bilgi;
   }
   function kaydet() {
@@ -203,10 +215,57 @@
     return giris;
   }
 
-  function tutumuDoldur(zorla) {
-    if (zorla || !$("tutum").value.trim()) {
-      $("tutum").value = PG.TUTUM_VARSAYILAN[dersTuru()].join("\n");
-    }
+  function maddeSatiri(madde) {
+    const satir = document.createElement("div");
+    satir.className = "madde";
+    const metin = document.createElement("input");
+    metin.type = "text";
+    metin.value = madde.metin || "";
+    metin.placeholder = "Gözlenecek özellik";
+    metin.setAttribute("aria-label", "Gözlenecek özellik");
+    const puan = document.createElement("input");
+    puan.type = "number";
+    puan.min = "0";
+    puan.max = String(PG.EN_COK_PUAN);
+    puan.step = "1";
+    puan.inputMode = "numeric";
+    puan.value = madde.puan === undefined ? "" : madde.puan;
+    puan.setAttribute("aria-label", "Puan");
+    const sil = document.createElement("button");
+    sil.type = "button";
+    sil.textContent = "Sil";
+    sil.addEventListener("click", () => {
+      satir.remove();
+      if (!document.querySelector("#tutum .madde")) maddeSatiri({ metin: "", puan: "" });
+      tutumDegisti();
+    });
+    [metin, puan].forEach((giris) => giris.addEventListener("input", tutumDegisti));
+    satir.append(metin, puan, sil);
+    $("tutum").append(satir);
+    return metin;
+  }
+
+  /** Toplamı gösterir; 100'ü geçerse belge oluşturmayı kapatır. */
+  function tutumDegisti() {
+    const toplam = PG.tutumToplam(formuOku().tutum);
+    const asim = toplam > PG.EN_COK_PUAN;
+    const kutu = $("tutumToplam");
+    kutu.className = asim ? "asim" : "";
+    kutu.textContent = asim
+      ? `Toplam: ${toplam} puan. ${PG.EN_COK_PUAN} puanı geçemez; ${toplam - PG.EN_COK_PUAN} puan azaltın.`
+      : `Toplam: ${toplam} / ${PG.EN_COK_PUAN} puan` + (toplam < PG.EN_COK_PUAN ? ` (${PG.EN_COK_PUAN - toplam} puan boşta)` : "");
+    dugmeyiGuncelle();
+    kaydet();
+  }
+
+  function dugmeyiGuncelle() {
+    const asim = PG.tutumToplam(formuOku().tutum) > PG.EN_COK_PUAN;
+    $("olustur").disabled = siniflar.length === 0 || asim;
+  }
+
+  function tutumuDoldur(maddeler) {
+    $("tutum").replaceChildren();
+    maddeler.forEach(maddeSatiri);
   }
 
   function formuYukle() {
@@ -215,8 +274,8 @@
     if (!$("egitimYili").value) $("egitimYili").value = "2026-2027";
     (k.ogretmenler && k.ogretmenler.length ? k.ogretmenler : [""]).forEach(ogretmenSatiri);
     if (k.dersTuru === "sinif") document.querySelector("input[name=dersTuru][value=sinif]").checked = true;
-    if (k.tutum && k.tutum.length) $("tutum").value = k.tutum.join("\n");
-    tutumuDoldur(false);
+    tutumuDoldur(k.tutum && k.tutum.length ? k.tutum : PG.tutumVarsayilan(dersTuru()));
+    tutumDegisti();
   }
 
   // ── Sınıf listesi ──
@@ -251,7 +310,7 @@
       ayrinti.append(ozet, kaydir);
       kap.append(ayrinti);
     });
-    $("olustur").disabled = siniflar.length === 0;
+    dugmeyiGuncelle();
   }
 
   async function dosyalariEkle(dosyalar) {
@@ -297,7 +356,7 @@
       sonuc.className = "hata";
       sonuc.textContent = "Belge oluşturulamadı: " + hata.message;
     } finally {
-      dugme.disabled = siniflar.length === 0;
+      dugmeyiGuncelle();
     }
   }
 
@@ -312,8 +371,12 @@
   birak.addEventListener("drop", (olay) => dosyalariEkle([...olay.dataTransfer.files]));
   $("dosya").addEventListener("change", (olay) => { dosyalariEkle([...olay.target.files]); olay.target.value = ""; });
   $("ogretmenEkle").addEventListener("click", () => ogretmenSatiri("").focus());
-  METIN_ALANLARI.concat(["tutum"]).forEach((id) => $(id).addEventListener("input", kaydet));
-  document.querySelectorAll("input[name=dersTuru]").forEach((r) => r.addEventListener("change", () => { tutumuDoldur(true); kaydet(); }));
+  METIN_ALANLARI.forEach((id) => $(id).addEventListener("input", kaydet));
+  $("maddeEkle").addEventListener("click", () => { maddeSatiri({ metin: "", puan: "" }).focus(); tutumDegisti(); });
+  document.querySelectorAll("input[name=dersTuru]").forEach((r) => r.addEventListener("change", () => {
+    tutumuDoldur(PG.tutumVarsayilan(dersTuru()));
+    tutumDegisti();
+  }));
   $("olustur").addEventListener("click", olustur);
 
   formuYukle();
