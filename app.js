@@ -254,7 +254,10 @@
   /**
    * @param docx  docx.js kütüphanesi
    * @param bilgi {okul, ders, egitimYili, donem, verilis, planTeslim, araKontrol, teslim,
-   *               ogretmenler: string[], dersTuru: "atolye"|"sinif", tutum: {metin, puan}[]}
+   *               ogretmenler: string[], dersTuru: "atolye"|"sinif", tutum: {metin, puan}[],
+   *               konular: {baslik, birim, tur, urun, sorular: string[]}[]}
+   *              Konu girilmemişse konu, soru ve dağılım tabloları boş satırlarla çıkar.
+   *              Her sınıfın `dagilim` dizisi (öğrenci sırası → konu dizini) varsa o kullanılır.
    *              Okul müdürünün adı belgeye yazılmaz; imza yerinde elle yazılır.
    * @param siniflar sinifListesiOku çıktılarının dizisi (şube başına bir tane)
    */
@@ -282,13 +285,23 @@
     const bolumler = [];
     const bolumEkle = (cocuklar, yatay = false) => bolumler.push({ properties: sayfa(yatay), children: cocuklar });
 
+    const konular = konulariDuzenle(bilgi.konular);
+    const konuVar = konular.length > 0;
+    const dagilimlar = new Map(siniflar.map((sinif) =>
+      [sinif, konuVar ? dagilimDuzenle(sinif.dagilim, konular.length, sinif.ogrenciler.length) : null]));
+    const konuTekrarli = konuVar && siniflar.some((sinif) => sinif.ogrenciler.length > konular.length);
+    const gorevTuruMetni = !konuVar
+      ? "Bireysel. Her öğrenciye ayrı konu verilir; konular e-Okul sınıf listesindeki sıraya göre dağıtılır (Konu Dağılım Listesi)."
+      : "Bireysel. Konular öğrencilere kura ile (rastgele) dağıtılır (Konu Dağılım Listesi)."
+        + (konuTekrarli ? " Aynı konu birden fazla öğrenciye verilebilir; her öğrenci çalışmasını bireysel hazırlar." : "");
+
     // 1. Yönerge
     const bilgiSatirlari = [
       ["Görevin veriliş tarihi", nokta(bilgi.verilis)],
       ["Çalışma planı teslimi", nokta(bilgi.planTeslim)],
       ["Ara kontrol", nokta(bilgi.araKontrol)],
       ["Görevin teslim tarihi", `**${nokta(bilgi.teslim)}**`],
-      ["Görev türü", "Bireysel. Her öğrenciye ayrı konu verilir; konular e-Okul sınıf listesindeki sıraya göre dağıtılır (Konu Dağılım Listesi)."],
+      ["Görev türü", gorevTuruMetni],
       ["Değerlendirme", "Zümre Performans Değerlendirme Ölçeği (100 puan). Performans notu öğrenciye anında bildirilir."],
     ];
     const bilgiTablosu = new docx.Table({
@@ -327,25 +340,36 @@
     const enKalabalik = siniflar.reduce((en, s) => Math.max(en, s.ogrenciler.length), 0);
     const konuSatiri = Math.max(EN_AZ_KONU_SATIRI, enKalabalik);
     const numaralar = Array.from({ length: konuSatiri }, (_, i) => i + 1);
+    const konuSatirlari = konuVar
+      ? konular.map((k, i) => [i + 1, k.baslik, k.birim, k.tur, k.urun])
+      : numaralar.map((n) => [n, "", "", "", ""]);
+    const soruSatirlari = konuVar
+      ? konular.map((k, i) => [i + 1, k.baslik,
+        k.sorular.length ? k.sorular.map((soru, j) => `${j + 1}. ${soru}`).join("\n") : "1.\n2."])
+      : numaralar.map((n) => [n, "", "1.\n2."]);
     bolumEkle([
       baslik("PERFORMANS GÖREVİ KONULARI"),
       y.tablo(["No", "Konu", "Öğrenme Birimi", "Görev Türü", "Beklenen Ürün ve Piyasa Araştırması"],
-        numaralar.map((n) => [n, "", "", "", ""]), [1, 5, 3, 2.6, 5.8], { boyut: 8.5, ortala: [0, 3] }),
+        konuSatirlari, [1, 5, 3, 2.6, 5.8], { boyut: 8.5, ortala: [0, 3] }),
     ]);
     bolumEkle([
       baslik("PERFORMANS GÖREVİ TEKNİK SORULARI"),
       y.paragraf("Her öğrenci kendi konu numarasındaki soruların **tamamını** raporunun \"Teknik Soruların Cevapları\" bölümünde gerekçeli olarak cevaplar.", { boyut: 9 }),
       y.tablo(["No", "Konu", "Cevaplanacak Teknik Sorular"],
-        numaralar.map((n) => [n, "", "1.\n2."]), [1, 5, 11.4], { boyut: 8.5, ortala: [0] }),
+        soruSatirlari, [1, 5, 11.4], { boyut: 8.5, ortala: [0] }),
     ]);
 
     // 3. Konu dağılım listesi (şube başına)
+    const konuNo = (sinif, sira) => (konuVar ? dagilimlar.get(sinif)[sira] + 1 : sira + 1);
     for (const sinif of siniflar) {
       bolumEkle([
         baslik("PERFORMANS GÖREVİ KONU DAĞILIM LİSTESİ"),
         y.paragraf(`**Sınıf / Şube:** ${sinif.sube}     **Öğrenci sayısı:** ${sinif.ogrenciler.length}     **Teslim:** ${nokta(bilgi.teslim)}`, { boyut: 9 }),
         y.tablo(["S.No", "Öğr. No", "Adı Soyadı", "Konu No", "Konu", "Görev Türü", "Tebellüğ\nİmza"],
-          sinif.ogrenciler.map((o, i) => [i + 1, o.no, `${o.ad} ${o.soyad}`, i + 1, "", "", ""]),
+          sinif.ogrenciler.map((o, i) => {
+            const konu = konuVar ? konular[dagilimlar.get(sinif)[i]] : null;
+            return [i + 1, o.no, `${o.ad} ${o.soyad}`, konuNo(sinif, i), konu ? konu.baslik : "", konu ? konu.tur : "", ""];
+          }),
           [1, 1.4, 4.4, 1.2, 5, 2.4, 2], { boyut: 8.5, ortala: [0, 1, 3, 5] }),
       ]);
     }
@@ -408,7 +432,7 @@
       const basliklar = ["S.No", "Öğr. No", "Adı Soyadı"].concat(konuSutunu ? ["Konu No"] : [], olcutBasliklari, [`TOPLAM\n(${toplamPuan})`]);
       const genislikler = sabit.concat(olcutBasliklari.map(() => olcutCm), [TOPLAM_CM]);
       const satirlar = sinif.ogrenciler.map((o, i) => [i + 1, o.no, `${o.ad} ${o.soyad}`]
-        .concat(konuSutunu ? [i + 1] : [], olcutBasliklari.map(() => ""), [""]));
+        .concat(konuSutunu ? [konuNo(sinif, i)] : [], olcutBasliklari.map(() => ""), [""]));
       bolumEkle([
         baslik(alt),
         y.paragraf(`**Sınıf / Şube:** ${sinif.sube}     **Ders Öğretmeni:** ……………………………………     ${aciklama}`, { boyut: 8.5 }),
@@ -455,6 +479,48 @@
     });
   }
 
+  /** Başlığı boş konuları atar, alanları kırpar. */
+  function konulariDuzenle(konular) {
+    const kirp = (deger) => String(deger || "").trim();
+    return (konular || [])
+      .map((k) => ({
+        baslik: kirp(k.baslik), birim: kirp(k.birim), tur: kirp(k.tur), urun: kirp(k.urun),
+        sorular: (k.sorular || []).map(kirp).filter(Boolean),
+      }))
+      .filter((k) => k.baslik);
+  }
+
+  /**
+   * Konuları öğrencilere rastgele ve dengeli dağıtır; öğrenci sırası → konu dizini döner.
+   * Konu azsa her konu eşit sayıda (en çok bir fark) tekrar eder; konu fazlaysa rastgele seçilenler verilir.
+   */
+  function konuDagit(konuSayisi, ogrenciSayisi, rastgele = Math.random) {
+    if (konuSayisi <= 0) return [];
+    const karistir = (dizi) => {
+      for (let i = dizi.length - 1; i > 0; i--) {
+        const j = Math.floor(rastgele() * (i + 1));
+        [dizi[i], dizi[j]] = [dizi[j], dizi[i]];
+      }
+      return dizi;
+    };
+    const deste = [];
+    while (deste.length < ogrenciSayisi) {
+      deste.push(...karistir(Array.from({ length: konuSayisi }, (_, i) => i)));
+    }
+    return karistir(deste.slice(0, ogrenciSayisi));
+  }
+
+  function dagilimGecerli(dagilim, konuSayisi, ogrenciSayisi) {
+    return Array.isArray(dagilim) && dagilim.length === ogrenciSayisi
+      && dagilim.every((d) => Number.isInteger(d) && d >= 0 && d < konuSayisi);
+  }
+
+  /** Geçerli bir dağılım yoksa konuları sırayla (tekrar ederek) dağıtır. */
+  function dagilimDuzenle(dagilim, konuSayisi, ogrenciSayisi) {
+    return dagilimGecerli(dagilim, konuSayisi, ogrenciSayisi)
+      ? dagilim : Array.from({ length: ogrenciSayisi }, (_, i) => i % konuSayisi);
+  }
+
   /** Hazır maddeleri {metin, puan} biçiminde verir. */
   function tutumVarsayilan(dersTuru) {
     return TUTUM_VARSAYILAN[dersTuru === "sinif" ? "sinif" : "atolye"].map((metin) => ({ metin, puan: TUTUM_PUANI }));
@@ -478,5 +544,6 @@
     return `Performans-Gorevi-${ders}${subeler ? "-" + subeler : ""}.docx`;
   }
 
-  return { sinifListesiOku, belgeOlustur, dosyaAdi, tutumVarsayilan, tutumToplam, EN_COK_PUAN };
+  return { sinifListesiOku, belgeOlustur, dosyaAdi, tutumVarsayilan, tutumToplam, EN_COK_PUAN,
+    konulariDuzenle, konuDagit, dagilimGecerli };
 });

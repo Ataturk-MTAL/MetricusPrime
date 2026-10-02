@@ -48,6 +48,17 @@
   .madde-baslik span:first-child { flex: 1; }
   .madde-baslik span:nth-child(2) { width: 5.2em; text-align: center; }
   .madde-baslik span:last-child { width: 3.4em; }
+  .secmeli { font-weight: 400; color: var(--soluk); font-size: .9rem; }
+  .konu { border: 1px solid var(--cizgi); border-radius: 8px; margin-bottom: 8px; }
+  .konu > summary { padding: 9px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .konu > summary span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .konu .ic { padding: 0 12px 12px; }
+  .konu textarea { min-height: 5.5em; }
+  .toplu { margin-top: 12px; }
+  .toplu summary { cursor: pointer; color: var(--vurgu); }
+  .toplu textarea { min-height: 7em; margin-bottom: 8px; }
+  .dagit { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+  .dagit p { margin: 0; font-weight: 600; }
   #tutumToplam { font-weight: 700; margin: 10px 0 0; }
   #tutumToplam.asim { color: var(--hata); }
   .sube { border: 1px solid var(--cizgi); border-radius: 8px; margin-top: 12px; }
@@ -118,8 +129,29 @@
     <p class="ipucu">Okul müdürünün adı belgeye yazılmaz; onay bölümünde elle yazılması için boş bırakılır.</p>
   </section>
 
+  <section aria-labelledby="b4k">
+    <h2 id="b4k"><span class="adim">4</span>Konular ve sorular <span class="secmeli">(isteğe bağlı)</span></h2>
+    <p class="ipucu" style="margin:0 0 10px">Konuları burada girerseniz öğrencilere rastgele dağıtılır ve belgeye yazılır.
+      Öğrenci sayısı kadar konu gerekmez; konu azsa her konu eşit sayıda öğrenciye verilir.
+      Boş bırakırsanız tablolar Word'de doldurulmak üzere boş gelir.</p>
+    <div id="konular"></div>
+    <button type="button" id="konuEkle">+ Konu ekle</button>
+    <details class="toplu">
+      <summary>Toplu ekle (listeyi yapıştır)</summary>
+      <label for="topluMetin">Her satır bir konu. Excel'den kopyalarsanız sütun sırası: Konu, Öğrenme birimi, Görev türü, Beklenen ürün.</label>
+      <textarea id="topluMetin" placeholder="Röleli DC motor yön kontrol devresi&#10;Transistörlü zamanlayıcı devresi&#10;…"></textarea>
+      <button type="button" id="topluEkle">Listeden ekle</button>
+    </details>
+    <div class="dagit">
+      <button type="button" id="dagit" disabled>Rastgele dağıt</button>
+      <p id="dagitDurum" role="status"></p>
+    </div>
+    <p class="ipucu">Dağılımı beğenmezseniz yeniden dağıtın. Word belgesine, ekranda gördüğünüz son dağılım yazılır
+      (sınıf listesindeki "Konu" sütunu). Belgeyi indirdikten sonra yeniden dağıtırsanız kâğıtla uyuşmaz.</p>
+  </section>
+
   <section aria-labelledby="b4">
-    <h2 id="b4"><span class="adim">4</span>Tutum ve davranış ölçeği</h2>
+    <h2 id="b4"><span class="adim">5</span>Tutum ve davranış ölçeği</h2>
     <div class="radyo" role="radiogroup" aria-label="Ders türü">
       <label><input type="radio" name="dersTuru" value="atolye" checked> Atölye dersi</label>
       <label><input type="radio" name="dersTuru" value="sinif"> Sınıf / laboratuvar dersi</label>
@@ -133,8 +165,8 @@
 
   <button type="button" class="ana" id="olustur" disabled>Word belgesini oluştur</button>
   <div id="sonuc" role="status"></div>
-  <p class="ipucu">Konular, teknik sorular, görevin amacı ve güvenlik kuralları Word belgesinde boş gelir; onları Word'de yazarsınız.
-    Dereceli puanlama anahtarı dolu gelir.</p>
+  <p class="ipucu">Görevin amacı ve güvenlik kuralları Word belgesinde boş gelir; onları Word'de yazarsınız.
+    Dereceli puanlama anahtarı dolu gelir. Belgedeki her şeyi sonradan Word'de düzeltebilirsiniz.</p>
 
   <section class="hakkinda" aria-labelledby="hakkinda" style="margin-top:24px">
     <h2 id="hakkinda">Hakkında</h2>
@@ -153,7 +185,7 @@
       <dt>Kaynak kod</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime" rel="noopener">github.com/Ataturk-MTAL/MetricusPrime</a></dd>
       <dt>Sorun bildirme</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime/issues" rel="noopener">GitHub üzerinden</a></dd>
       <dt>Kullanılan kütüphaneler</dt><dd>SheetJS (Apache-2.0), docx (MIT)</dd>
-      <dt>Sürüm</dt><dd>1.2 · Ekim 2026</dd>
+      <dt>Sürüm</dt><dd>1.3 · Ekim 2026</dd>
     </dl>
   </section>
 
@@ -167,6 +199,8 @@
 (function () {
   "use strict";
   const KAYIT_ANAHTARI = "metricusprime.form.v2";
+  const GOREV_TURLERI = ["Uygulama + Rapor", "Araştırma + Rapor", "Araştırma + Sunum"];
+  const TOPLU_SUTUNLAR = ["baslik", "birim", "tur", "urun"];
   const METIN_ALANLARI = ["okul", "ders", "egitimYili", "donem", "verilis", "planTeslim", "araKontrol", "teslim"];
   const PG = window.PerformansGorevi;
   const $ = (id) => document.getElementById(id);
@@ -180,6 +214,13 @@
     const bilgi = Object.fromEntries(METIN_ALANLARI.map((id) => [id, $(id).value]));
     bilgi.ogretmenler = [...document.querySelectorAll("#ogretmenler input")].map((i) => i.value);
     bilgi.dersTuru = dersTuru();
+    bilgi.konular = [...document.querySelectorAll("#konular .konu")].map((kart) => ({
+      baslik: kart.querySelector("[data-alan=baslik]").value,
+      birim: kart.querySelector("[data-alan=birim]").value,
+      tur: kart.querySelector("[data-alan=tur]").value,
+      urun: kart.querySelector("[data-alan=urun]").value,
+      sorular: kart.querySelector("[data-alan=sorular]").value.split("\n"),
+    }));
     bilgi.tutum = [...document.querySelectorAll("#tutum .madde")].map((satir) => ({
       metin: satir.querySelector("input[type=text]").value,
       puan: satir.querySelector("input[type=number]").value,
@@ -213,6 +254,118 @@
     satir.append(giris, sil);
     $("ogretmenler").append(satir);
     return giris;
+  }
+
+  // ── Konular ──
+  let kimlikSayaci = 0;
+  function alan(kart, etiketMetni, ad, tur, deger) {
+    const kimlik = `konu-${ad}-${++kimlikSayaci}`;
+    const etiket = document.createElement("label");
+    etiket.htmlFor = kimlik;
+    etiket.textContent = etiketMetni;
+    let giris;
+    if (tur === "metin-alani") {
+      giris = document.createElement("textarea");
+    } else if (tur === "secim") {
+      giris = document.createElement("select");
+      GOREV_TURLERI.concat(deger && !GOREV_TURLERI.includes(deger) ? [deger] : []).forEach((secenek) => {
+        const o = document.createElement("option");
+        o.value = o.textContent = secenek;
+        giris.append(o);
+      });
+    } else {
+      giris = document.createElement("input");
+      giris.type = "text";
+    }
+    giris.id = kimlik;
+    giris.dataset.alan = ad;
+    if (deger) giris.value = deger;
+    giris.addEventListener("input", konularDegisti);
+    kart.append(etiket, giris);
+    return giris;
+  }
+
+  function konuKarti(konu, acik) {
+    const kart = document.createElement("details");
+    kart.className = "konu";
+    kart.open = Boolean(acik);
+    const ozet = document.createElement("summary");
+    const ad = document.createElement("span");
+    const sil = document.createElement("button");
+    sil.type = "button";
+    sil.textContent = "Sil";
+    sil.addEventListener("click", (olay) => {
+      olay.preventDefault();
+      kart.remove();
+      konularDegisti();
+    });
+    ozet.append(ad, sil);
+    const ic = document.createElement("div");
+    ic.className = "ic";
+    const baslik = alan(ic, "Konu", "baslik", "metin", konu.baslik);
+    alan(ic, "Görev türü", "tur", "secim", konu.tur || GOREV_TURLERI[0]);
+    alan(ic, "Öğrenme birimi", "birim", "metin", konu.birim);
+    alan(ic, "Beklenen ürün ve piyasa araştırması", "urun", "metin", konu.urun);
+    alan(ic, "Cevaplanacak sorular (her satır bir soru)", "sorular", "metin-alani", (konu.sorular || []).join("\n"));
+    kart.append(ozet, ic);
+    $("konular").append(kart);
+    return baslik;
+  }
+
+  function konuBasliklariniYaz() {
+    document.querySelectorAll("#konular .konu").forEach((kart, i) => {
+      const baslik = kart.querySelector("[data-alan=baslik]").value.trim();
+      kart.querySelector("summary span").textContent = `${i + 1}. ${baslik || "(başlıksız konu)"}`;
+    });
+  }
+
+  /** Konu sayısı değiştiyse yeniden dağıtır; yalnız metin değiştiyse dağılımı korur. */
+  function dagilimiGuncelle(zorla) {
+    const konuSayisi = PG.konulariDuzenle(formuOku().konular).length;
+    siniflar.forEach((sinif) => {
+      if (konuSayisi === 0) {
+        sinif.dagilim = null;
+      } else if (zorla || sinif.dagilimKonuSayisi !== konuSayisi
+                 || !PG.dagilimGecerli(sinif.dagilim, konuSayisi, sinif.ogrenciler.length)) {
+        sinif.dagilim = PG.konuDagit(konuSayisi, sinif.ogrenciler.length);
+      }
+      sinif.dagilimKonuSayisi = konuSayisi;
+    });
+    $("dagit").disabled = konuSayisi === 0 || siniflar.length === 0;
+    const durum = $("dagitDurum");
+    if (konuSayisi === 0) {
+      durum.textContent = "";
+    } else if (siniflar.length === 0) {
+      durum.textContent = `${konuSayisi} konu girildi. Dağıtım için sınıf listesi ekleyin.`;
+    } else {
+      durum.textContent = siniflar.map((sinif) => {
+        const n = sinif.ogrenciler.length;
+        if (konuSayisi >= n) {
+          return `${sinif.sube}: ${n} öğrenciye ${n} ayrı konu` + (konuSayisi > n ? ` (${konuSayisi - n} konu yedek)` : "");
+        }
+        const az = Math.floor(n / konuSayisi);
+        const cok = Math.ceil(n / konuSayisi);
+        return `${sinif.sube}: ${konuSayisi} konu, her biri ${az === cok ? az : az + "-" + cok} öğrenciye`;
+      }).join(" · ");
+    }
+    subeleriCiz();
+  }
+
+  function konularDegisti() {
+    konuBasliklariniYaz();
+    dagilimiGuncelle(false);
+    kaydet();
+  }
+
+  /** Yapıştırılan listeyi konulara çevirir: her satır bir konu, sekmeyle ayrılmış sütunlar isteğe bağlı. */
+  function topluEkle() {
+    const satirlar = $("topluMetin").value.split("\n").map((s) => s.trim()).filter(Boolean);
+    satirlar.forEach((satir) => {
+      const parcalar = satir.split("\t").map((p) => p.trim());
+      konuKarti(Object.fromEntries(TOPLU_SUTUNLAR.map((ad, i) => [ad, parcalar[i] || ""])), false);
+    });
+    if (satirlar.length) $("topluMetin").value = "";
+    konularDegisti();
   }
 
   function maddeSatiri(madde) {
@@ -275,16 +428,24 @@
     (k.ogretmenler && k.ogretmenler.length ? k.ogretmenler : [""]).forEach(ogretmenSatiri);
     if (k.dersTuru === "sinif") document.querySelector("input[name=dersTuru][value=sinif]").checked = true;
     tutumuDoldur(k.tutum && k.tutum.length ? k.tutum : PG.tutumVarsayilan(dersTuru()));
+    (k.konular || []).filter((konu) => konu.baslik && konu.baslik.trim()).forEach((konu) => konuKarti(konu, false));
+    konuBasliklariniYaz();
     tutumDegisti();
+    dagilimiGuncelle(false);
   }
 
   // ── Sınıf listesi ──
   function subeleriCiz() {
     const kap = $("subeler");
+    const acikSubeler = new Set([...kap.querySelectorAll("details[open]")].map((d) => d.dataset.sube));
+    const konular = PG.konulariDuzenle(formuOku().konular);
     kap.replaceChildren();
     siniflar.forEach((sinif, sira) => {
       const ayrinti = document.createElement("details");
       ayrinti.className = "sube";
+      ayrinti.dataset.sube = sinif.sube;
+      ayrinti.open = acikSubeler.has(sinif.sube);
+      const dagilimVar = PG.dagilimGecerli(sinif.dagilim, konular.length, sinif.ogrenciler.length);
       const ozet = document.createElement("summary");
       const ad = document.createElement("span");
       ad.textContent = `${sinif.sube} — ${sinif.ogrenciler.length} öğrenci (${sinif.dosya})`;
@@ -294,17 +455,22 @@
       kaldir.addEventListener("click", (olay) => {
         olay.preventDefault();
         siniflar = siniflar.filter((_, i) => i !== sira);
-        subeleriCiz();
+        dagilimiGuncelle(false);
       });
       ozet.append(ad, kaldir);
       const kaydir = document.createElement("div");
       kaydir.className = "kaydir";
       const tablo = document.createElement("table");
       const baslik = tablo.insertRow();
-      ["S.No", "Öğr. No", "Adı Soyadı"].forEach((b) => { const th = document.createElement("th"); th.textContent = b; baslik.append(th); });
+      ["S.No", "Öğr. No", "Adı Soyadı"].concat(dagilimVar ? ["Konu"] : []).forEach((b) => {
+        const th = document.createElement("th");
+        th.textContent = b;
+        baslik.append(th);
+      });
       sinif.ogrenciler.forEach((o, i) => {
         const satir = tablo.insertRow();
-        [i + 1, o.no, `${o.ad} ${o.soyad}`].forEach((d) => { satir.insertCell().textContent = d; });
+        const konu = dagilimVar ? [`${sinif.dagilim[i] + 1}. ${konular[sinif.dagilim[i]].baslik}`] : [];
+        [i + 1, o.no, `${o.ad} ${o.soyad}`].concat(konu).forEach((d) => { satir.insertCell().textContent = d; });
       });
       kaydir.append(tablo);
       ayrinti.append(ozet, kaydir);
@@ -328,7 +494,7 @@
     const kutu = $("dosyaHata");
     kutu.hidden = hatalar.length === 0;
     kutu.textContent = hatalar.join(" ");
-    subeleriCiz();
+    dagilimiGuncelle(false);
   }
 
   // ── Word üretimi ──
@@ -372,6 +538,9 @@
   $("dosya").addEventListener("change", (olay) => { dosyalariEkle([...olay.target.files]); olay.target.value = ""; });
   $("ogretmenEkle").addEventListener("click", () => ogretmenSatiri("").focus());
   METIN_ALANLARI.forEach((id) => $(id).addEventListener("input", kaydet));
+  $("konuEkle").addEventListener("click", () => { konuKarti({}, true).focus(); konularDegisti(); });
+  $("topluEkle").addEventListener("click", topluEkle);
+  $("dagit").addEventListener("click", () => dagilimiGuncelle(true));
   $("maddeEkle").addEventListener("click", () => { maddeSatiri({ metin: "", puan: "" }).focus(); tutumDegisti(); });
   document.querySelectorAll("input[name=dersTuru]").forEach((r) => r.addEventListener("change", () => {
     tutumuDoldur(PG.tutumVarsayilan(dersTuru()));
