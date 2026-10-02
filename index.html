@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MetricusPrime — Performans Görevi Belgesi</title>
+<link rel="icon" type="image/png" href="logo.png">
 <style>
   :root {
     --zemin: #f6f7f9; --kart: #ffffff; --yazi: #1c2430; --soluk: #5b6675; --cizgi: #d5dae1;
@@ -51,11 +52,26 @@
   .radyo { display: flex; gap: 18px; flex-wrap: wrap; }
   .radyo label { font-weight: 400; margin: 0; display: flex; align-items: center; gap: 6px; }
   footer { color: var(--soluk); font-size: .85rem; text-align: center; margin-top: 20px; }
+  header.ust { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+  header.ust img { width: 72px; height: 72px; flex: none; border-radius: 50%; background: #ffffff; }
+  header.ust .okul { color: var(--soluk); font-size: .9rem; margin: 0; }
+  .hakkinda p, .hakkinda li { font-size: .95rem; }
+  .hakkinda ul { padding-left: 1.2em; margin: 8px 0; }
+  .hakkinda dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 12px 0 0; font-size: .95rem; }
+  .hakkinda dt { font-weight: 600; }
+  .hakkinda dd { margin: 0; }
+  a { color: var(--vurgu); }
 </style>
 </head>
 <body>
 <main>
-  <h1>Performans Görevi Belgesi</h1>
+  <header class="ust">
+    <img src="logo.png" alt="Mersin Atatürk Mesleki ve Teknik Anadolu Lisesi logosu" width="72" height="72">
+    <div>
+      <p class="okul">Mersin Atatürk Mesleki ve Teknik Anadolu Lisesi</p>
+      <h1>Performans Görevi Belgesi</h1>
+    </div>
+  </header>
   <p class="alt">e-Okul sınıf listesini yükleyin, bilgileri doldurun, Word belgesini indirin.
     Sınıf listesi bilgisayarınızdan dışarı çıkmaz; her şey bu sayfanın içinde yapılır.</p>
 
@@ -110,6 +126,27 @@
   <div id="sonuc" role="status"></div>
   <p class="ipucu">Konular, teknik sorular, görevin amacı ve güvenlik kuralları Word belgesinde boş gelir; onları Word'de yazarsınız.
     Dereceli puanlama anahtarı dolu gelir.</p>
+
+  <section class="hakkinda" aria-labelledby="hakkinda" style="margin-top:24px">
+    <h2 id="hakkinda">Hakkında</h2>
+    <p><strong>MetricusPrime</strong>, öğretmenlerin performans görevi belgelerini e-Okul sınıf listesinden birkaç dakikada
+      hazırlaması için Mersin Atatürk Mesleki ve Teknik Anadolu Lisesi Elektrik-Elektronik Teknolojisi Alanı'nda geliştirildi.</p>
+    <ul>
+      <li>Üretilen belge: görev yönergesi, konu dağılım listesi, dereceli puanlama anahtarı, bireysel değerlendirme formu,
+        sınıf değerlendirme çizelgesi ve tutum-davranış ölçeği.</li>
+      <li>Ölçütler ve puanlar, alan zümresinin Performans Değerlendirme Ölçeği ile aynıdır.</li>
+      <li>Sınıf listesi yalnız tarayıcınızın içinde okunur; hiçbir yere gönderilmez ve saklanmaz.</li>
+      <li>Kurulum gerekmez; internet olmadan da çalışır.</li>
+    </ul>
+    <dl>
+      <dt>Geliştiren</dt><dd>Hakan GÜLEN</dd>
+      <dt>Okul</dt><dd><a href="https://mersinataturkmtal.meb.k12.tr/" rel="noopener">mersinataturkmtal.meb.k12.tr</a></dd>
+      <dt>Kaynak kod</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime" rel="noopener">github.com/Ataturk-MTAL/MetricusPrime</a></dd>
+      <dt>Sorun bildirme</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime/issues" rel="noopener">GitHub üzerinden</a></dd>
+      <dt>Kullanılan kütüphaneler</dt><dd>SheetJS (Apache-2.0), docx (MIT)</dd>
+      <dt>Sürüm</dt><dd>1.1 · Ekim 2026</dd>
+    </dl>
+  </section>
 
   <footer>MetricusPrime · Mersin Atatürk Mesleki ve Teknik Anadolu Lisesi</footer>
 </main>
