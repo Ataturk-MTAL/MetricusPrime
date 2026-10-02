@@ -1,0 +1,44 @@
+name: Hata bildirimi
+description: Sayfada ya da üretilen belgede yanlış çalışan bir şeyi bildirin.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Öğrenci adlarını ve numaralarını paylaşmayın.** Ekran görüntüsü eklerken bu bilgileri kapatın; gerçek sınıf listesi ya da üretilmiş belge eklemeyin.
+  - type: textarea
+    id: ne-yaptim
+    attributes:
+      label: Ne yaptınız?
+      description: Adım adım yazın.
+      placeholder: "1. Sınıf listesini yükledim\n2. ..."
+    validations:
+      required: true
+  - type: textarea
+    id: beklenen
+    attributes:
+      label: Ne olmasını bekliyordunuz?
+    validations:
+      required: true
+  - type: textarea
+    id: olan
+    attributes:
+      label: Ne oldu?
+      description: Varsa ekrandaki hata mesajını aynen yazın.
+    validations:
+      required: true
+  - type: input
+    id: surum
+    attributes:
+      label: Sürüm
+      description: Sayfanın en altındaki "Hakkında" bölümünde yazar.
+      placeholder: "1.9"
+    validations:
+      required: true
+  - type: input
+    id: tarayici
+    attributes:
+      label: Tarayıcı ve cihaz
+      placeholder: "Chrome, Windows 11"
+    validations:
+      required: true

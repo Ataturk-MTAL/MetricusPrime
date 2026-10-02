@@ -1,0 +1,25 @@
+# main dalına yalnız dev dalından PR birleştirilebilir (CONTRIBUTING.md).
+name: main kaynak dal denetimi
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  yalniz-dev:
+    name: main'e yalnız dev'den
+    runs-on: ubuntu-latest
+    steps:
+      - name: Kaynak dalı denetle
+        env:
+          KAYNAK_DAL: ${{ github.head_ref }}
+          KAYNAK_DEPO: ${{ github.event.pull_request.head.repo.full_name }}
+          HEDEF_DEPO: ${{ github.repository }}
+        run: |
+          if [ "$KAYNAK_DAL" != "dev" ] || [ "$KAYNAK_DEPO" != "$HEDEF_DEPO" ]; then
+            echo "::error::main dalına yalnız bu deponun dev dalından PR açılabilir. Kaynak: $KAYNAK_DEPO:$KAYNAK_DAL"
+            exit 1
+          fi
+          echo "Kaynak dal dev; uygun."

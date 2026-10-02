@@ -28,6 +28,10 @@ Sayfa, 6698 sayılı KVKK'ya uygun olacak biçimde tasarlanmıştır: hiçbir ki
 
 Depoyu ZIP olarak indirip `index.html` dosyasına çift tıklamak yeterlidir.
 
+## Katkı
+
+Sorun açma, dallanma ve birleştirme kuralları: [CONTRIBUTING.md](CONTRIBUTING.md). Geliştirme `dev` dalından ayrılan dallarda yapılır; `dev` üzerinden `main` dalına birleşir.
+
 ## Yapı
 
 - `index.html`: form ve arayüz
