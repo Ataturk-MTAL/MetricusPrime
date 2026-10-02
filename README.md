@@ -9,7 +9,7 @@ Performans görevi belgesini (yönerge, konu dağılım listesi, dereceli puanla
 3. Ders bilgilerini, öğretmenleri ve okul müdürünü yazın.
 4. "Word belgesini oluştur" düğmesine basın; belge bilgisayarınıza iner.
 
-Konular, teknik sorular, görevin amacı ve güvenlik kuralları Word belgesinde boş gelir; Word'de doldurulur.
+Konular ve sorular forma girilirse öğrencilere rastgele dağıtılır ve belgeye yazılır; öğrenci sayısı kadar konu gerekmez. Girilmezse tablolar boş gelir. Görevin amacı ve güvenlik kuralları Word'de doldurulur.
 
 ## Gizlilik
 

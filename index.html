@@ -138,7 +138,7 @@
     <button type="button" id="konuEkle">+ Konu ekle</button>
     <details class="toplu">
       <summary>Toplu ekle (listeyi yapıştır)</summary>
-      <label for="topluMetin">Her satır bir konu. Excel'den kopyalarsanız sütun sırası: Konu, Öğrenme birimi, Görev türü, Beklenen ürün.</label>
+      <label for="topluMetin">Her satır bir konu. Excel'den kopyalarsanız sütun sırası: Konu, Öğrenme birimi, Görev türü, Beklenen çalışma.</label>
       <textarea id="topluMetin" placeholder="Röleli DC motor yön kontrol devresi&#10;Transistörlü zamanlayıcı devresi&#10;…"></textarea>
       <button type="button" id="topluEkle">Listeden ekle</button>
     </details>
@@ -185,7 +185,7 @@
       <dt>Kaynak kod</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime" rel="noopener">github.com/Ataturk-MTAL/MetricusPrime</a></dd>
       <dt>Sorun bildirme</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime/issues" rel="noopener">GitHub üzerinden</a></dd>
       <dt>Kullanılan kütüphaneler</dt><dd>SheetJS (Apache-2.0), docx (MIT)</dd>
-      <dt>Sürüm</dt><dd>1.3 · Ekim 2026</dd>
+      <dt>Sürüm</dt><dd>1.4 · Ekim 2026</dd>
     </dl>
   </section>
 
@@ -305,7 +305,7 @@
     const baslik = alan(ic, "Konu", "baslik", "metin", konu.baslik);
     alan(ic, "Görev türü", "tur", "secim", konu.tur || GOREV_TURLERI[0]);
     alan(ic, "Öğrenme birimi", "birim", "metin", konu.birim);
-    alan(ic, "Beklenen ürün ve piyasa araştırması", "urun", "metin", konu.urun);
+    alan(ic, "Öğrenciden beklenen çalışma (ne hazırlayacak, ne teslim edecek?)", "urun", "metin", konu.urun);
     alan(ic, "Cevaplanacak sorular (her satır bir soru)", "sorular", "metin-alani", (konu.sorular || []).join("\n"));
     kart.append(ozet, ic);
     $("konular").append(kart);

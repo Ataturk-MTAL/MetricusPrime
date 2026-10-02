@@ -32,18 +32,18 @@
       "Plan yüzeysel, takvim belirsizdir.",
       "Plan hazırlamamıştır."]],
     ["Kaynak çeşitliliği", "Ödevi hazırlarken çeşitli kaynaklardan yararlanmıştır", 10, [
-      "Ders kitabı, katalog, üretici sitesi ve güncel ürün bilgisi gibi en az 4 farklı kaynak kullanmıştır.",
+      "Ders kitabı, kitap/makale, kurum sitesi ve güncel örnekler gibi en az 4 farklı kaynak kullanmıştır.",
       "3 farklı kaynak kullanmıştır.",
       "1-2 kaynak kullanmıştır.",
       "Kaynak kullanmamış veya tek kaynaktan kopyalamıştır."]],
     ["Bilgiden yararlanma", "Performans ödevinde çalışılmak üzere seçilen konunun raporlaştırılmasında ulaşılan kaynaklardaki bilgilerden yeterince yararlanmıştır", 10, [
-      "Bilgiyi kendi cümleleriyle işlemiş; hesap, ölçüm ve katalog değerleriyle desteklemiş; teknik soruları gerekçeli cevaplamıştır.",
-      "Bilgiyi çoğunlukla işlemiş; teknik soru cevaplarında küçük eksikler vardır.",
+      "Bilgiyi kendi cümleleriyle işlemiş; örnek, veri ve gözlemlerle desteklemiş; soruları gerekçeli cevaplamıştır.",
+      "Bilgiyi çoğunlukla işlemiş; soru cevaplarında küçük eksikler vardır.",
       "Bilgi büyük ölçüde aktarılmış, yorum azdır.",
       "Bilgi kopyalanmış veya konuyla ilgisizdir."]],
     ["Görsel materyal", "Performans ödevi çeşitli görsel materyaller ile desteklenmiştir", 15, [
-      "Kurallara uygun şema/çizim, uygulama fotoğrafı, ölçüm tablosu ve grafik vardır.",
-      "Şema/çizim ve en az iki farklı görsel vardır.",
+      "Konuya uygun şema/çizim, fotoğraf, tablo ve grafik gibi farklı türde görseller vardır.",
+      "En az iki farklı türde görsel vardır.",
       "Yalnız bir tür görsel vardır.",
       "Görsel yoktur veya konuyla ilgisizdir."]],
     ["Görsel açıklaması", "Performans çalışmasında yer alan görsel materyal, konuya ilişkin özet bilgilerle desteklenmiştir", 15, [
@@ -62,10 +62,10 @@
       "Yazım hataları anlamayı zorlaştırmaktadır.",
       "Rapor anlaşılmamaktadır."]],
     ["Amaca uygunluk", "Ortaya çıkan performans ödevi, konunun amacına uygundur", 20, [
-      "Ürün çalışır / sunum eksiksizdir; ölçümler yorumlanmış, piyasa araştırması yapılmış, teknik soruların tamamı doğru cevaplanmıştır.",
-      "Ürün çalışır / sunum yeterlidir; yorum, piyasa araştırması veya soru cevaplarından biri kısmen eksiktir.",
-      "Ürün kısmen çalışır / sunum eksiktir; teknik soruların bir kısmı cevapsızdır.",
-      "Ürün konunun amacını karşılamamaktadır."]],
+      "Çalışma / sunum eksiksizdir; sonuçlar yorumlanmış, konu güncel örneklerle ilişkilendirilmiş, soruların tamamı doğru cevaplanmıştır.",
+      "Çalışma / sunum yeterlidir; yorum, güncel örnekler veya soru cevaplarından biri kısmen eksiktir.",
+      "Çalışma / sunum eksiktir; soruların bir kısmı cevapsızdır.",
+      "Çalışma konunun amacını karşılamamaktadır."]],
   ];
   const ARALIK = {
     5: ["5", "4-3", "2", "1-0"],
@@ -96,24 +96,24 @@
     "Kapak (okul, ders, konu, öğrencinin adı-soyadı, sınıfı, numarası, teslim tarihi)",
     "Amaç",
     "Teorik bilgi (kendi cümleleriyle)",
-    "Şema / çizim ve malzeme listesi (uygulama konularında)",
-    "Çalışma prensibi, hesaplamalar, ölçüm tabloları ve grafikler",
-    "Piyasa araştırması: güncel ürün örnekleri, katalog değerleri, kullanım alanları",
-    "Teknik soruların cevapları: her soru yazılır, altına gerekçeli cevabı verilir",
+    "Şema, çizim veya görseller; varsa malzeme listesi",
+    "Konunun işlenişi: açıklamalar, varsa hesaplamalar, tablolar ve grafikler",
+    "Güncel örnekler ve günlük hayattaki / meslekteki kullanım alanları",
+    "Soruların cevapları: her soru yazılır, altına gerekçeli cevabı verilir",
     "Sonuç ve yorum (karşılaşılan sorunlar ve çözümleri)",
     "Kaynakça (yazar/site adı, başlık, bağlantı, erişim tarihi)",
   ];
 
   const GOREV_TURLERI = [
     ["Uygulama + Rapor", "[Uygulamanın nerede ve nasıl yapılacağını, neyin teslim edileceğini yazınız.]"],
-    ["Araştırma + Rapor", "Konu kaynaklardan araştırılır; karşılaştırma tabloları, güncel örnekler ve katalog değerleriyle rapor hazırlanır."],
+    ["Araştırma + Rapor", "Konu kaynaklardan araştırılır; karşılaştırma tabloları ve güncel örneklerle rapor hazırlanır."],
     ["Araştırma + Sunum", "Rapora ek olarak 5-7 dakikalık sunum (8-12 slayt) hazırlanır ve sınıfta sunulur."],
   ];
 
   const KURALLAR = [
-    "Rapor yalnız el yazısıyla hazırlanır; bilgisayar çıktısı rapor kabul edilmez. A4 kâğıt, en az 6 sayfa. Fotoğraf ve katalog görselleri çıktı alınıp yapıştırılabilir; görseller numaralanır ve açıklanır.",
+    "Rapor yalnız el yazısıyla hazırlanır; bilgisayar çıktısı rapor kabul edilmez. A4 kâğıt, en az 6 sayfa. Fotoğraf ve benzeri görseller çıktı alınıp yapıştırılabilir; görseller numaralanır ve açıklanır.",
     "Başka bir kaynaktan veya arkadaşından kopyalanan çalışmalar değerlendirmeye alınmaz. Yapay zekâ araçlarından yararlanılabilir; ancak öğrenci raporunu kendi cümleleriyle yazar ve kullandığı aracı kaynakçada belirtir.",
-    "Her konu için en az iki teknik soru verilmiştir. Soruların tamamı cevaplanmadan görev teslim edilmiş sayılmaz.",
+    "Her konu için cevaplanacak sorular verilmiştir. Soruların tamamı cevaplanmadan görev teslim edilmiş sayılmaz.",
     "Çalışma planı ve ara kontrol tarihlerine uyulması, zümre ölçeğinin \"planlama\" ölçütünde değerlendirilir.",
     "Güvenlik: [Derse özgü iş sağlığı ve güvenliği kurallarını yazınız.]",
   ];
@@ -336,7 +336,7 @@
       y.paragraf(".... / .... / 20....\n**Uygundur**\n\n\n……………………………………\nOkul Müdürü", { hiza: ORTA }),
     ]);
 
-    // 2. Konu listesi ve teknik sorular (öğretmen Word'de doldurur)
+    // 2. Konu listesi ve sorular (formda girilmediyse boş satırlar)
     const enKalabalik = siniflar.reduce((en, s) => Math.max(en, s.ogrenciler.length), 0);
     const konuSatiri = Math.max(EN_AZ_KONU_SATIRI, enKalabalik);
     const numaralar = Array.from({ length: konuSatiri }, (_, i) => i + 1);
@@ -349,13 +349,13 @@
       : numaralar.map((n) => [n, "", "1.\n2."]);
     bolumEkle([
       baslik("PERFORMANS GÖREVİ KONULARI"),
-      y.tablo(["No", "Konu", "Öğrenme Birimi", "Görev Türü", "Beklenen Ürün ve Piyasa Araştırması"],
+      y.tablo(["No", "Konu", "Öğrenme Birimi", "Görev Türü", "Öğrenciden Beklenen Çalışma"],
         konuSatirlari, [1, 5, 3, 2.6, 5.8], { boyut: 8.5, ortala: [0, 3] }),
     ]);
     bolumEkle([
-      baslik("PERFORMANS GÖREVİ TEKNİK SORULARI"),
-      y.paragraf("Her öğrenci kendi konu numarasındaki soruların **tamamını** raporunun \"Teknik Soruların Cevapları\" bölümünde gerekçeli olarak cevaplar.", { boyut: 9 }),
-      y.tablo(["No", "Konu", "Cevaplanacak Teknik Sorular"],
+      baslik("PERFORMANS GÖREVİ SORULARI"),
+      y.paragraf("Her öğrenci kendi konu numarasındaki soruların **tamamını** raporunun \"Soruların Cevapları\" bölümünde gerekçeli olarak cevaplar.", { boyut: 9 }),
+      y.tablo(["No", "Konu", "Cevaplanacak Sorular"],
         soruSatirlari, [1, 5, 11.4], { boyut: 8.5, ortala: [0] }),
     ]);
 
