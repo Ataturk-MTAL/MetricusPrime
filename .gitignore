@@ -1,0 +1,8 @@
+# Öğrenci verisi ve üretilen belgeler depoya girmez
+*.xls
+*.XLS
+*.xlsx
+*.docx
+*.pdf
+ogrenciler.json
+.DS_Store

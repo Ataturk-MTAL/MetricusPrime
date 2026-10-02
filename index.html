@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MetricusPrime — Performans Görevi Belgesi</title>
+<style>
+  :root {
+    --zemin: #f6f7f9; --kart: #ffffff; --yazi: #1c2430; --soluk: #5b6675; --cizgi: #d5dae1;
+    --vurgu: #1f5fbf; --vurgu-yazi: #ffffff; --hata: #b3261e; --hata-zemin: #fdecea; --tamam: #1b6e3c;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --zemin: #12161c; --kart: #1b212a; --yazi: #e8ecf1; --soluk: #9aa5b4; --cizgi: #333c49;
+      --vurgu: #6ea8ff; --vurgu-yazi: #0d1420; --hata: #ffb4ab; --hata-zemin: #3a1a17; --tamam: #7fd6a0;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--zemin); color: var(--yazi); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  h2 { font-size: 1.1rem; margin: 0 0 12px; }
+  p.alt { color: var(--soluk); margin: 0 0 20px; }
+  section { background: var(--kart); border: 1px solid var(--cizgi); border-radius: 12px; padding: 18px; margin-bottom: 16px; }
+  .adim { display: inline-block; width: 1.7em; height: 1.7em; line-height: 1.7em; text-align: center; border-radius: 50%;
+          background: var(--vurgu); color: var(--vurgu-yazi); font-weight: 700; margin-right: 8px; font-size: .9rem; }
+  label { display: block; font-weight: 600; font-size: .9rem; margin: 12px 0 4px; }
+  input[type=text], select, textarea {
+    width: 100%; padding: 9px 10px; border: 1px solid var(--cizgi); border-radius: 8px;
+    background: var(--zemin); color: var(--yazi); font: inherit;
+  }
+  textarea { min-height: 9.5em; resize: vertical; }
+  input:focus, select:focus, textarea:focus, button:focus-visible { outline: 2px solid var(--vurgu); outline-offset: 1px; }
+  .ikili { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+  @media (max-width: 560px) { .ikili { grid-template-columns: 1fr; } }
+  .ipucu { color: var(--soluk); font-size: .85rem; margin: 4px 0 0; }
+  #birak { border: 2px dashed var(--cizgi); border-radius: 12px; padding: 26px 16px; text-align: center; cursor: pointer; }
+  #birak.uzerinde { border-color: var(--vurgu); background: var(--zemin); }
+  button { font: inherit; border-radius: 8px; border: 1px solid var(--cizgi); background: var(--kart); color: var(--yazi); padding: 8px 14px; cursor: pointer; }
+  button.ana { background: var(--vurgu); color: var(--vurgu-yazi); border-color: var(--vurgu); font-weight: 700; padding: 12px 20px; font-size: 1.05rem; width: 100%; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .ogretmen { display: flex; gap: 8px; margin-bottom: 8px; }
+  .ogretmen button { flex: none; }
+  .sube { border: 1px solid var(--cizgi); border-radius: 8px; margin-top: 12px; }
+  .sube summary { padding: 10px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .sube table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  .sube td, .sube th { padding: 4px 12px; border-top: 1px solid var(--cizgi); text-align: left; }
+  .sube .kaydir { max-height: 260px; overflow-y: auto; }
+  .hata { background: var(--hata-zemin); color: var(--hata); border-radius: 8px; padding: 10px 12px; margin-top: 12px; }
+  .tamam { color: var(--tamam); font-weight: 600; margin-top: 12px; }
+  .radyo { display: flex; gap: 18px; flex-wrap: wrap; }
+  .radyo label { font-weight: 400; margin: 0; display: flex; align-items: center; gap: 6px; }
+  footer { color: var(--soluk); font-size: .85rem; text-align: center; margin-top: 20px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Performans Görevi Belgesi</h1>
+  <p class="alt">e-Okul sınıf listesini yükleyin, bilgileri doldurun, Word belgesini indirin.
+    Sınıf listesi bilgisayarınızdan dışarı çıkmaz; her şey bu sayfanın içinde yapılır.</p>
+
+  <section aria-labelledby="b1">
+    <h2 id="b1"><span class="adim">1</span>Sınıf listesi</h2>
+    <div id="birak" role="button" tabindex="0" aria-describedby="birakIpucu">
+      <strong>e-Okul sınıf listesini (XLS) buraya sürükleyin</strong><br>veya tıklayıp seçin
+    </div>
+    <input type="file" id="dosya" accept=".xls,.xlsx" multiple hidden>
+    <p class="ipucu" id="birakIpucu">e-Okul &gt; Sınıf Listesi raporunu Excel olarak indirin. Birden fazla şube için dosyaları birlikte ekleyebilirsiniz.</p>
+    <div id="dosyaHata" class="hata" role="alert" hidden></div>
+    <div id="subeler"></div>
+  </section>
+
+  <section aria-labelledby="b2">
+    <h2 id="b2"><span class="adim">2</span>Ders bilgileri</h2>
+    <label for="okul">Okulun adı</label>
+    <input type="text" id="okul" autocomplete="organization">
+    <label for="ders">Dersin adı</label>
+    <input type="text" id="ders" placeholder="ör. Analog-Dijital Elektronik Atölyesi">
+    <div class="ikili">
+      <div><label for="egitimYili">Eğitim-öğretim yılı</label><input type="text" id="egitimYili" placeholder="2026-2027"></div>
+      <div><label for="donem">Dönem</label><select id="donem"><option value="1">1. dönem</option><option value="2">2. dönem</option></select></div>
+      <div><label for="verilis">Görevin veriliş tarihi</label><input type="text" id="verilis" placeholder="5-9 Ekim 2026"></div>
+      <div><label for="planTeslim">Çalışma planı teslimi</label><input type="text" id="planTeslim" placeholder="16 Ekim 2026"></div>
+      <div><label for="araKontrol">Ara kontrol</label><input type="text" id="araKontrol" placeholder="30 Kasım - 4 Aralık 2026"></div>
+      <div><label for="teslim">Görevin teslim tarihi</label><input type="text" id="teslim" placeholder="21-25 Aralık 2026"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="b3">
+    <h2 id="b3"><span class="adim">3</span>Öğretmenler ve onay</h2>
+    <label id="ogretmenEtiket">Ders öğretmenleri</label>
+    <div id="ogretmenler" aria-labelledby="ogretmenEtiket"></div>
+    <button type="button" id="ogretmenEkle">+ Öğretmen ekle</button>
+    <label for="mudur">Okul müdürü</label>
+    <input type="text" id="mudur" placeholder="Adı SOYADI">
+  </section>
+
+  <section aria-labelledby="b4">
+    <h2 id="b4"><span class="adim">4</span>Tutum ve davranış ölçeği</h2>
+    <div class="radyo" role="radiogroup" aria-label="Ders türü">
+      <label><input type="radio" name="dersTuru" value="atolye" checked> Atölye dersi</label>
+      <label><input type="radio" name="dersTuru" value="sinif"> Sınıf / laboratuvar dersi</label>
+    </div>
+    <label for="tutum">Gözlenecek özellikler (her satır bir madde, her biri 20 puan)</label>
+    <textarea id="tutum" spellcheck="true"></textarea>
+    <p class="ipucu">Hazır maddeleri olduğu gibi bırakabilir ya da dersinize göre değiştirebilirsiniz.</p>
+  </section>
+
+  <button type="button" class="ana" id="olustur" disabled>Word belgesini oluştur</button>
+  <div id="sonuc" role="status"></div>
+  <p class="ipucu">Konular, teknik sorular, görevin amacı ve güvenlik kuralları Word belgesinde boş gelir; onları Word'de yazarsınız.
+    Dereceli puanlama anahtarı dolu gelir.</p>
+
+  <footer>MetricusPrime · Mersin Atatürk Mesleki ve Teknik Anadolu Lisesi</footer>
+</main>
+
+<script src="vendor/xlsx.full.min.js"></script>
+<script src="vendor/docx.umd.js"></script>
+<script src="app.js"></script>
+<script>
+(function () {
+  "use strict";
+  const KAYIT_ANAHTARI = "metricusprime.form.v1";
+  const METIN_ALANLARI = ["okul", "ders", "egitimYili", "donem", "verilis", "planTeslim", "araKontrol", "teslim", "mudur"];
+  const PG = window.PerformansGorevi;
+  const $ = (id) => document.getElementById(id);
+  let siniflar = [];
+
+  // ── Form: kaydet / geri yükle (öğrenci listesi saklanmaz) ──
+  function dersTuru() {
+    return document.querySelector("input[name=dersTuru]:checked").value;
+  }
+  function formuOku() {
+    const bilgi = Object.fromEntries(METIN_ALANLARI.map((id) => [id, $(id).value]));
+    bilgi.ogretmenler = [...document.querySelectorAll("#ogretmenler input")].map((i) => i.value);
+    bilgi.dersTuru = dersTuru();
+    bilgi.tutum = $("tutum").value.split("\n").map((s) => s.trim()).filter(Boolean);
+    return bilgi;
+  }
+  function kaydet() {
+    try { localStorage.setItem(KAYIT_ANAHTARI, JSON.stringify(formuOku())); } catch (hata) { /* gizli pencerede saklama kapalı olabilir */ }
+  }
+  function kayitliBilgi() {
+    try { return JSON.parse(localStorage.getItem(KAYIT_ANAHTARI)) || {}; } catch (hata) { return {}; }
+  }
+
+  function ogretmenSatiri(deger) {
+    const satir = document.createElement("div");
+    satir.className = "ogretmen";
+    const giris = document.createElement("input");
+    giris.type = "text";
+    giris.placeholder = "Adı SOYADI";
+    giris.value = deger || "";
+    giris.setAttribute("aria-label", "Öğretmen adı soyadı");
+    giris.addEventListener("input", kaydet);
+    const sil = document.createElement("button");
+    sil.type = "button";
+    sil.textContent = "Sil";
+    sil.addEventListener("click", () => {
+      satir.remove();
+      if (!document.querySelector("#ogretmenler input")) ogretmenSatiri("");
+      kaydet();
+    });
+    satir.append(giris, sil);
+    $("ogretmenler").append(satir);
+    return giris;
+  }
+
+  function tutumuDoldur(zorla) {
+    if (zorla || !$("tutum").value.trim()) {
+      $("tutum").value = PG.TUTUM_VARSAYILAN[dersTuru()].join("\n");
+    }
+  }
+
+  function formuYukle() {
+    const k = kayitliBilgi();
+    METIN_ALANLARI.forEach((id) => { if (k[id]) $(id).value = k[id]; });
+    if (!$("egitimYili").value) $("egitimYili").value = "2026-2027";
+    (k.ogretmenler && k.ogretmenler.length ? k.ogretmenler : [""]).forEach(ogretmenSatiri);
+    if (k.dersTuru === "sinif") document.querySelector("input[name=dersTuru][value=sinif]").checked = true;
+    if (k.tutum && k.tutum.length) $("tutum").value = k.tutum.join("\n");
+    tutumuDoldur(false);
+  }
+
+  // ── Sınıf listesi ──
+  function subeleriCiz() {
+    const kap = $("subeler");
+    kap.replaceChildren();
+    siniflar.forEach((sinif, sira) => {
+      const ayrinti = document.createElement("details");
+      ayrinti.className = "sube";
+      const ozet = document.createElement("summary");
+      const ad = document.createElement("span");
+      ad.textContent = `${sinif.sube} — ${sinif.ogrenciler.length} öğrenci (${sinif.dosya})`;
+      const kaldir = document.createElement("button");
+      kaldir.type = "button";
+      kaldir.textContent = "Kaldır";
+      kaldir.addEventListener("click", (olay) => {
+        olay.preventDefault();
+        siniflar = siniflar.filter((_, i) => i !== sira);
+        subeleriCiz();
+      });
+      ozet.append(ad, kaldir);
+      const kaydir = document.createElement("div");
+      kaydir.className = "kaydir";
+      const tablo = document.createElement("table");
+      const baslik = tablo.insertRow();
+      ["S.No", "Öğr. No", "Adı Soyadı"].forEach((b) => { const th = document.createElement("th"); th.textContent = b; baslik.append(th); });
+      sinif.ogrenciler.forEach((o, i) => {
+        const satir = tablo.insertRow();
+        [i + 1, o.no, `${o.ad} ${o.soyad}`].forEach((d) => { satir.insertCell().textContent = d; });
+      });
+      kaydir.append(tablo);
+      ayrinti.append(ozet, kaydir);
+      kap.append(ayrinti);
+    });
+    $("olustur").disabled = siniflar.length === 0;
+  }
+
+  async function dosyalariEkle(dosyalar) {
+    const hatalar = [];
+    for (const dosya of dosyalar) {
+      try {
+        const veri = new Uint8Array(await dosya.arrayBuffer());
+        const sinif = PG.sinifListesiOku(window.XLSX, veri, dosya.name);
+        siniflar = siniflar.filter((s) => s.sube !== sinif.sube).concat([sinif]);
+      } catch (hata) {
+        hatalar.push(hata.message);
+      }
+    }
+    siniflar.sort((a, b) => a.sube.localeCompare(b.sube, "tr", { numeric: true }));
+    const kutu = $("dosyaHata");
+    kutu.hidden = hatalar.length === 0;
+    kutu.textContent = hatalar.join(" ");
+    subeleriCiz();
+  }
+
+  // ── Word üretimi ──
+  async function olustur() {
+    const sonuc = $("sonuc");
+    sonuc.className = "";
+    sonuc.textContent = "";
+    const dugme = $("olustur");
+    dugme.disabled = true;
+    try {
+      const bilgi = formuOku();
+      const belge = PG.belgeOlustur(window.docx, bilgi, siniflar);
+      const blob = await window.docx.Packer.toBlob(belge);
+      const baglanti = document.createElement("a");
+      baglanti.href = URL.createObjectURL(blob);
+      baglanti.download = PG.dosyaAdi(bilgi, siniflar);
+      document.body.append(baglanti);
+      baglanti.click();
+      baglanti.remove();
+      setTimeout(() => URL.revokeObjectURL(baglanti.href), 10000);
+      sonuc.className = "tamam";
+      sonuc.textContent = `Belge indirildi: ${baglanti.download}`;
+    } catch (hata) {
+      console.error(hata);
+      sonuc.className = "hata";
+      sonuc.textContent = "Belge oluşturulamadı: " + hata.message;
+    } finally {
+      dugme.disabled = siniflar.length === 0;
+    }
+  }
+
+  // ── Olaylar ──
+  const birak = $("birak");
+  birak.addEventListener("click", () => $("dosya").click());
+  birak.addEventListener("keydown", (olay) => {
+    if (olay.key === "Enter" || olay.key === " ") { olay.preventDefault(); $("dosya").click(); }
+  });
+  ["dragenter", "dragover"].forEach((ad) => birak.addEventListener(ad, (olay) => { olay.preventDefault(); birak.classList.add("uzerinde"); }));
+  ["dragleave", "drop"].forEach((ad) => birak.addEventListener(ad, (olay) => { olay.preventDefault(); birak.classList.remove("uzerinde"); }));
+  birak.addEventListener("drop", (olay) => dosyalariEkle([...olay.dataTransfer.files]));
+  $("dosya").addEventListener("change", (olay) => { dosyalariEkle([...olay.target.files]); olay.target.value = ""; });
+  $("ogretmenEkle").addEventListener("click", () => ogretmenSatiri("").focus());
+  METIN_ALANLARI.concat(["tutum"]).forEach((id) => $(id).addEventListener("input", kaydet));
+  document.querySelectorAll("input[name=dersTuru]").forEach((r) => r.addEventListener("change", () => { tutumuDoldur(true); kaydet(); }));
+  $("olustur").addEventListener("click", olustur);
+
+  formuYukle();
+})();
+</script>
+</body>
+</html>
