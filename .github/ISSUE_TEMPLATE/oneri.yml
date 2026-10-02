@@ -1,0 +1,23 @@
+name: Öneri
+description: Yeni bir özellik ya da iyileştirme önerin.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: ihtiyac
+    attributes:
+      label: Hangi ihtiyacı karşılayacak?
+      description: Şu an neyi yapamıyorsunuz ya da neyi zor yapıyorsunuz?
+    validations:
+      required: true
+  - type: textarea
+    id: oneri
+    attributes:
+      label: Öneriniz
+      description: Nasıl çalışmasını istersiniz?
+    validations:
+      required: true
+  - type: input
+    id: ders
+    attributes:
+      label: Hangi ders ya da kullanım için?
+      placeholder: "Tüm dersler / atölye dersleri / ..."
