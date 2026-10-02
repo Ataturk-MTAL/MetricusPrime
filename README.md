@@ -1,4 +1,4 @@
-# MetricusPrime
+# MetricusPrime — Performans Yönergesi ve Çizelgesi Oluşturma
 
 Performans görevi belgesini (yönerge, konu dağılım listesi, dereceli puanlama anahtarı, değerlendirme çizelgeleri) Word olarak üreten tek sayfalık form.
 
