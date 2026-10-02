@@ -5,7 +5,7 @@ Performans görevi belgesini (yönerge, konu dağılım listesi, dereceli puanla
 ## Kullanım
 
 1. Sayfayı açın: https://ataturk-mtal.github.io/MetricusPrime/
-2. e-Okul > Sınıf Listesi raporunu Excel (XLS) olarak indirip sayfaya sürükleyin. Birden fazla şube eklenebilir.
+2. e-Okul > Sınıf Listesi raporunu **"Excel (Sadece Veri)"** biçiminde dışa aktarıp sayfaya sürükleyin. Birden fazla şube eklenebilir.
 3. Ders bilgilerini, öğretmenleri ve okul müdürünü yazın.
 4. "Word belgesini oluştur" düğmesine basın; belge bilgisayarınıza iner.
 

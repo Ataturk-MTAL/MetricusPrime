@@ -12,6 +12,7 @@
 
   const SINIF_DESENI = /(\d+)\.\s*Sınıf\s*\/\s*(\S+)\s*Şubesi/i;
   const GEREKLI_SUTUNLAR = ["Öğrenci No", "Adı", "Soyadı"];
+  const SADECE_VERI_NOTU = " e-Okul'da raporu \"Excel (Sadece Veri)\" biçiminde dışa aktarıp yeniden deneyin.";
   const CM = 567; // 1 cm = 567 twip
   const DIKEY_KENAR_CM = 1.8;
   const YATAY_KENAR_CM = 1.4;
@@ -137,7 +138,7 @@
     const baslik = satirlar.slice(0, 6).map((s) => s.map(hucre).join(" ")).join(" ");
     const eslesme = SINIF_DESENI.exec(baslik);
     if (!eslesme) {
-      throw new Error(dosyaAdi + ": sınıf/şube bilgisi bulunamadı. Bu dosya e-Okul \"Sınıf Listesi\" raporu olmayabilir.");
+      throw new Error(dosyaAdi + ": sınıf/şube bilgisi bulunamadı. Bu dosya e-Okul \"Sınıf Listesi\" raporu olmayabilir." + SADECE_VERI_NOTU);
     }
 
     let baslikSatiri = -1;
@@ -151,7 +152,7 @@
       }
     }
     if (baslikSatiri < 0) {
-      throw new Error(dosyaAdi + ": \"Öğrenci No\", \"Adı\", \"Soyadı\" sütunları bulunamadı.");
+      throw new Error(dosyaAdi + ": \"Öğrenci No\", \"Adı\", \"Soyadı\" sütunları bulunamadı." + SADECE_VERI_NOTU);
     }
 
     const ogrenciler = [];
@@ -165,7 +166,7 @@
       });
     }
     if (ogrenciler.length === 0) {
-      throw new Error(dosyaAdi + ": öğrenci satırı bulunamadı.");
+      throw new Error(dosyaAdi + ": öğrenci satırı bulunamadı." + SADECE_VERI_NOTU);
     }
     ogrenciler.sort((a, b) => a.no - b.no);
     return { sinif: eslesme[1], sube: eslesme[1] + "/" + eslesme[2], dosya: dosyaAdi, ogrenciler };

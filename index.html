@@ -35,6 +35,7 @@
   .ikili { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
   @media (max-width: 560px) { .ikili { grid-template-columns: 1fr; } }
   .ipucu { color: var(--soluk); font-size: .85rem; margin: 4px 0 0; }
+  .not { border-left: 4px solid var(--vurgu); background: var(--zemin); padding: 8px 12px; border-radius: 0 8px 8px 0; font-size: .9rem; margin: 10px 0 0; }
   #birak { border: 2px dashed var(--cizgi); border-radius: 12px; padding: 26px 16px; text-align: center; cursor: pointer; }
   #birak.uzerinde { border-color: var(--vurgu); background: var(--zemin); }
   button { font: inherit; border-radius: 8px; border: 1px solid var(--cizgi); background: var(--kart); color: var(--yazi); padding: 8px 14px; cursor: pointer; }
@@ -100,7 +101,9 @@
       <strong>e-Okul sınıf listesini (XLS) buraya sürükleyin</strong><br>veya tıklayıp seçin
     </div>
     <input type="file" id="dosya" accept=".xls,.xlsx" multiple hidden>
-    <p class="ipucu" id="birakIpucu">e-Okul &gt; Sınıf Listesi raporunu Excel olarak indirin. Birden fazla şube için dosyaları birlikte ekleyebilirsiniz.</p>
+    <p class="not" id="birakIpucu"><strong>Önemli:</strong> e-Okul'da Sınıf Listesi raporunu dışa aktarırken biçim olarak
+      <strong>"Excel (Sadece Veri)"</strong> seçin. Diğer Excel seçenekleriyle alınan dosyalar okunamayabilir.</p>
+    <p class="ipucu">Birden fazla şube için dosyaları birlikte ekleyebilirsiniz.</p>
     <div id="dosyaHata" class="hata" role="alert" hidden></div>
     <div id="subeler"></div>
   </section>
@@ -185,7 +188,7 @@
       <dt>Kaynak kod</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime" rel="noopener">github.com/Ataturk-MTAL/MetricusPrime</a></dd>
       <dt>Sorun bildirme</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime/issues" rel="noopener">GitHub üzerinden</a></dd>
       <dt>Kullanılan kütüphaneler</dt><dd>SheetJS (Apache-2.0), docx (MIT)</dd>
-      <dt>Sürüm</dt><dd>1.4 · Ekim 2026</dd>
+      <dt>Sürüm</dt><dd>1.5 · Ekim 2026</dd>
     </dl>
   </section>
 
