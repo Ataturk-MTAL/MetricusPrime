@@ -11,6 +11,10 @@ Performans görevi belgesini (yönerge, konu dağılım listesi, dereceli puanla
 
 Konular ve sorular forma girilirse öğrencilere rastgele dağıtılır ve belgeye yazılır; öğrenci sayısı kadar konu gerekmez. Girilmezse tablolar boş gelir. Görevin amacı ve güvenlik kuralları Word'de doldurulur.
 
+## Örnek rapor
+
+Öğrencilerle paylaşılabilecek 6 sayfalık örnek rapor: https://ataturk-mtal.github.io/MetricusPrime/ornek-rapor.pdf
+
 ## Gizlilik ve KVKK
 
 Sayfa, 6698 sayılı KVKK'ya uygun olacak biçimde tasarlanmıştır: hiçbir kişisel veri sunucuya gönderilmez ve sunucuda tutulmaz.

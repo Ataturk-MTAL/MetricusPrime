@@ -81,6 +81,7 @@
   .hakkinda dt { font-weight: 600; }
   .hakkinda dd { margin: 0; }
   a { color: var(--vurgu); }
+  a.dugme { display: inline-block; text-decoration: none; background: var(--vurgu); color: var(--vurgu-yazi); font-weight: 700; padding: 9px 16px; border-radius: 8px; }
 </style>
 </head>
 <body>
@@ -171,7 +172,23 @@
   <p class="ipucu">Görevin amacı ve güvenlik kuralları Word belgesinde boş gelir; onları Word'de yazarsınız.
     Dereceli puanlama anahtarı dolu gelir. Belgedeki her şeyi sonradan Word'de düzeltebilirsiniz.</p>
 
-  <section class="hakkinda" aria-labelledby="kvkk" style="margin-top:24px">
+  <section class="hakkinda" aria-labelledby="ornek" style="margin-top:24px">
+    <h2 id="ornek">Öğrenciler için örnek rapor</h2>
+    <p>Öğrencilerinize raporun nasıl hazırlanacağını göstermek için paylaşabileceğiniz 6 sayfalık örnek rapor (PDF).
+      Her bölümün başında o bölüme ne yazılacağı açıklanır; kapak, amaç, teorik bilgi, devre şeması, hesaplamalar,
+      ölçüm tablosu, soruların cevapları, sonuç ve kaynakça örnekleri vardır.</p>
+    <div class="dagit" style="margin-top:8px">
+      <a class="dugme" href="ornek-rapor.pdf" download="Ornek-Performans-Gorevi-Raporu.pdf">Örnek raporu indir (PDF)</a>
+      <a href="ornek-rapor.pdf" target="_blank" rel="noopener">Tarayıcıda aç</a>
+      <button type="button" id="baglantiKopyala">Paylaşım bağlantısını kopyala</button>
+    </div>
+    <p id="kopyaDurum" role="status" class="ipucu"></p>
+    <p class="ipucu">Örnek, Analog-Dijital Elektronik Atölyesi dersinden bir uygulama konusudur (transistörlü su/yağmur algılayıcı);
+      başka derslerde biçim örneği olarak kullanılabilir. Raporda öğrenci bilgisi yoktur ve her sayfasında
+      "kendi raporunuzu el yazısıyla ve kendi cümlelerinizle hazırlayınız" uyarısı bulunur.</p>
+  </section>
+
+  <section class="hakkinda" aria-labelledby="kvkk">
     <h2 id="kvkk">Gizlilik ve KVKK</h2>
     <p>Bu sayfa, 6698 sayılı Kişisel Verilerin Korunması Kanunu'na (KVKK) uygun olacak biçimde tasarlanmıştır:
       <strong>hiçbir kişisel veri sunucuya gönderilmez ve sunucuda tutulmaz.</strong></p>
@@ -205,7 +222,7 @@
       <dt>Kaynak kod</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime" rel="noopener">github.com/Ataturk-MTAL/MetricusPrime</a></dd>
       <dt>Sorun bildirme</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime/issues" rel="noopener">GitHub üzerinden</a></dd>
       <dt>Kullanılan kütüphaneler</dt><dd>SheetJS (Apache-2.0), docx (MIT)</dd>
-      <dt>Sürüm</dt><dd>1.7 · Ekim 2026</dd>
+      <dt>Sürüm</dt><dd>1.8 · Ekim 2026</dd>
     </dl>
   </section>
 
@@ -567,6 +584,15 @@
     tutumDegisti();
   }));
   $("olustur").addEventListener("click", olustur);
+  $("baglantiKopyala").addEventListener("click", async () => {
+    const adres = new URL("ornek-rapor.pdf", location.href).href;
+    try {
+      await navigator.clipboard.writeText(adres);
+      $("kopyaDurum").textContent = "Bağlantı kopyalandı: " + adres;
+    } catch (hata) {
+      $("kopyaDurum").textContent = "Kopyalanamadı; bağlantıyı elle kopyalayın: " + adres;
+    }
+  });
   $("formuTemizle").addEventListener("click", () => {
     try { localStorage.removeItem(KAYIT_ANAHTARI); } catch (hata) { /* saklama zaten kapalı */ }
     location.reload();

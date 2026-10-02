@@ -4,5 +4,7 @@
 *.xlsx
 *.docx
 *.pdf
+# Yayımlanan örnek rapor: içinde öğrenci verisi yok
+!ornek-rapor.pdf
 ogrenciler.json
 .DS_Store
