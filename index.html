@@ -93,7 +93,7 @@
     </div>
   </header>
   <p class="alt">e-Okul sınıf listesini yükleyin, bilgileri doldurun, Word belgesini indirin.
-    Sınıf listesi bilgisayarınızdan dışarı çıkmaz; her şey bu sayfanın içinde yapılır.</p>
+    Sınıf listesi bilgisayarınızdan dışarı çıkmaz; hiçbir veri sunucuda tutulmaz (<a href="#kvkk">Gizlilik ve KVKK</a>).</p>
 
   <section aria-labelledby="b1">
     <h2 id="b1"><span class="adim">1</span>Sınıf listesi</h2>
@@ -171,7 +171,25 @@
   <p class="ipucu">Görevin amacı ve güvenlik kuralları Word belgesinde boş gelir; onları Word'de yazarsınız.
     Dereceli puanlama anahtarı dolu gelir. Belgedeki her şeyi sonradan Word'de düzeltebilirsiniz.</p>
 
-  <section class="hakkinda" aria-labelledby="hakkinda" style="margin-top:24px">
+  <section class="hakkinda" aria-labelledby="kvkk" style="margin-top:24px">
+    <h2 id="kvkk">Gizlilik ve KVKK</h2>
+    <p>Bu sayfa, 6698 sayılı Kişisel Verilerin Korunması Kanunu'na (KVKK) uygun olacak biçimde tasarlanmıştır:
+      <strong>hiçbir kişisel veri sunucuya gönderilmez ve sunucuda tutulmaz.</strong></p>
+    <ul>
+      <li>Sınıf listesi yalnız sizin bilgisayarınızda, tarayıcının içinde okunur. Öğrenci adı ve numarası internete çıkmaz.</li>
+      <li>Öğrenci bilgileri tarayıcıda da saklanmaz; sayfayı kapattığınızda silinir.</li>
+      <li>Tarayıcınızda yalnız form alanları hatırlanır: okul, ders, tarihler, öğretmen adları, konular ve tutum maddeleri.
+        Bunlar da yalnız sizin cihazınızda durur.</li>
+      <li>Sayfada çerez, reklam, izleme ya da istatistik aracı yoktur; üye girişi istenmez.</li>
+      <li>Word belgesi tarayıcınızda üretilir ve doğrudan bilgisayarınıza iner.</li>
+    </ul>
+    <p class="ipucu">Üretilen Word belgesi öğrenci adlarını içerir; belgenin saklanması ve paylaşılması onu indiren öğretmenin sorumluluğundadır.
+      Sayfa GitHub Pages üzerinde barındırılır; GitHub, her web sitesinde olduğu gibi ziyaretin teknik kayıtlarını (IP adresi gibi) tutabilir.
+      Bu kayıtlarda sınıf listesine ait hiçbir bilgi bulunmaz.</p>
+    <button type="button" id="formuTemizle">Bu cihazda saklanan form bilgilerini sil</button>
+  </section>
+
+  <section class="hakkinda" aria-labelledby="hakkinda">
     <h2 id="hakkinda">Hakkında</h2>
     <p><strong>MetricusPrime</strong>, öğretmenlerin performans görevi belgelerini e-Okul sınıf listesinden birkaç dakikada
       hazırlaması için Mersin Atatürk Mesleki ve Teknik Anadolu Lisesi Elektrik-Elektronik Teknolojisi Alanı'nda geliştirildi.</p>
@@ -179,7 +197,6 @@
       <li>Üretilen belge: görev yönergesi, konu dağılım listesi, dereceli puanlama anahtarı, bireysel değerlendirme formu,
         sınıf değerlendirme çizelgesi ve tutum-davranış ölçeği.</li>
       <li>Ölçütler ve puanlar, alan zümresinin Performans Değerlendirme Ölçeği ile aynıdır.</li>
-      <li>Sınıf listesi yalnız tarayıcınızın içinde okunur; hiçbir yere gönderilmez ve saklanmaz.</li>
       <li>Kurulum gerekmez; internet olmadan da çalışır.</li>
     </ul>
     <dl>
@@ -188,7 +205,7 @@
       <dt>Kaynak kod</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime" rel="noopener">github.com/Ataturk-MTAL/MetricusPrime</a></dd>
       <dt>Sorun bildirme</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime/issues" rel="noopener">GitHub üzerinden</a></dd>
       <dt>Kullanılan kütüphaneler</dt><dd>SheetJS (Apache-2.0), docx (MIT)</dd>
-      <dt>Sürüm</dt><dd>1.5 · Ekim 2026</dd>
+      <dt>Sürüm</dt><dd>1.6 · Ekim 2026</dd>
     </dl>
   </section>
 
@@ -550,6 +567,10 @@
     tutumDegisti();
   }));
   $("olustur").addEventListener("click", olustur);
+  $("formuTemizle").addEventListener("click", () => {
+    try { localStorage.removeItem(KAYIT_ANAHTARI); } catch (hata) { /* saklama zaten kapalı */ }
+    location.reload();
+  });
 
   formuYukle();
 })();

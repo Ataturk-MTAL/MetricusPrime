@@ -11,9 +11,14 @@ Performans görevi belgesini (yönerge, konu dağılım listesi, dereceli puanla
 
 Konular ve sorular forma girilirse öğrencilere rastgele dağıtılır ve belgeye yazılır; öğrenci sayısı kadar konu gerekmez. Girilmezse tablolar boş gelir. Görevin amacı ve güvenlik kuralları Word'de doldurulur.
 
-## Gizlilik
+## Gizlilik ve KVKK
 
-Sınıf listesi yalnız tarayıcının içinde okunur; hiçbir yere gönderilmez ve saklanmaz. Tarayıcıda yalnız form alanları (okul, ders, tarihler, öğretmen adları) hatırlanır.
+Sayfa, 6698 sayılı KVKK'ya uygun olacak biçimde tasarlanmıştır: hiçbir kişisel veri sunucuya gönderilmez ve sunucuda tutulmaz.
+
+- Sınıf listesi yalnız tarayıcının içinde okunur; öğrenci bilgileri tarayıcıda da saklanmaz.
+- Tarayıcıda yalnız form alanları (okul, ders, tarihler, öğretmen adları, konular, tutum maddeleri) hatırlanır; sayfadaki düğmeyle silinebilir.
+- Çerez, izleme ya da istatistik aracı yoktur.
+- Üretilen Word belgesi öğrenci adlarını içerir; saklanması ve paylaşılması indiren öğretmenin sorumluluğundadır.
 
 ## İnternetsiz kullanım
 
