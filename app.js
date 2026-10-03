@@ -109,7 +109,19 @@
     ["Uygulama + Rapor", "[Uygulamanın nerede ve nasıl yapılacağını, neyin teslim edileceğini yazınız.]"],
     ["Araştırma + Rapor", "Konu kaynaklardan araştırılır; karşılaştırma tabloları ve güncel örneklerle rapor hazırlanır."],
     ["Araştırma + Sunum", "Rapora ek olarak 5-7 dakikalık sunum (8-12 slayt) hazırlanır ve sınıfta sunulur."],
+    ["Rapor", "Konu kaynaklardan incelenir ve yalnız yazılı rapor hazırlanır; uygulama ya da sunum gerekmez."],
   ];
+  const GOREV_TURU_ADLARI = GOREV_TURLERI.map(([ad]) => ad);
+  const VARSAYILAN_GOREV_TURU = GOREV_TURU_ADLARI[0];
+
+  /** Yazılan görev türünü sabit listedeki karşılığına eşler (büyük/küçük harf ve boşluk farkı önemsiz); bulamazsa null. */
+  function gorevTuruEslestir(deger) {
+    const sade = (metin) => String(metin || "").toLocaleLowerCase("tr").replace(/\s+/g, "").replace(/ve/g, "+");
+    const aranan = sade(deger);
+    if (!aranan) return null;
+    return GOREV_TURU_ADLARI.find((ad) => sade(ad) === aranan)
+      || (["sadecerapor", "yalnızrapor", "rapor"].includes(aranan) ? "Rapor" : null);
+  }
 
   const KURALLAR = [
     "Rapor yalnız el yazısıyla hazırlanır; bilgisayar çıktısı rapor kabul edilmez. A4 kâğıt, en az 6 sayfa. Fotoğraf ve benzeri görseller çıktı alınıp yapıştırılabilir; görseller numaralanır ve açıklanır.",
@@ -327,7 +339,8 @@
       y.paragraf("Görevin Amacı", { boyut: 11, kalin: true, sonra: 60 }),
       y.paragraf("[Bu dönem işlenen öğrenme birimlerini ve görevin öğrenciye ne kazandıracağını 2-3 cümleyle yazınız.]", { hiza: AlignmentType.JUSTIFIED }),
       y.paragraf("Görev Türleri", { boyut: 11, kalin: true }),
-      ...GOREV_TURLERI.map(([ad, aciklama]) => y.paragraf(`• **${ad}:** ${aciklama}`, { girinti: 0.4 })),
+      ...GOREV_TURLERI.filter(([ad]) => !konuVar || konular.some((k) => k.tur === ad))
+        .map(([ad, aciklama]) => y.paragraf(`• **${ad}:** ${aciklama}`, { girinti: 0.4 })),
       y.paragraf("Raporun Bölümleri", { boyut: 11, kalin: true }),
       ...RAPOR_BOLUMLERI.map((b, i) => y.paragraf(`${i + 1}. ${b}`, { girinti: 0.5, sonra: 20 })),
       y.paragraf("Kurallar", { boyut: 11, kalin: true }),
@@ -485,7 +498,7 @@
     const kirp = (deger) => String(deger || "").trim();
     return (konular || [])
       .map((k) => ({
-        baslik: kirp(k.baslik), birim: kirp(k.birim), tur: kirp(k.tur), urun: kirp(k.urun),
+        baslik: kirp(k.baslik), birim: kirp(k.birim), tur: gorevTuruEslestir(k.tur) || VARSAYILAN_GOREV_TURU, urun: kirp(k.urun),
         sorular: (k.sorular || []).map(kirp).filter(Boolean),
       }))
       .filter((k) => k.baslik);
@@ -546,5 +559,5 @@
   }
 
   return { sinifListesiOku, belgeOlustur, dosyaAdi, tutumVarsayilan, tutumToplam, EN_COK_PUAN,
-    konulariDuzenle, konuDagit, dagilimGecerli };
+    konulariDuzenle, konuDagit, dagilimGecerli, GOREV_TURU_ADLARI, gorevTuruEslestir };
 });
