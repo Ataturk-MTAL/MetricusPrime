@@ -60,6 +60,15 @@
   .toplu textarea { min-height: 7em; margin-bottom: 8px; }
   .dagit { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
   .dagit p { margin: 0; font-weight: 600; }
+  .etiket-satir { display: flex; align-items: center; gap: 8px; margin: 12px 0 4px; }
+  .etiket-satir label { margin: 0; }
+  button.bilgi { width: 1.6em; height: 1.6em; padding: 0; border-radius: 50%; font: italic 700 .85rem/1 Georgia, serif;
+    color: var(--vurgu); border-color: var(--vurgu); flex: none; }
+  .bilgi-pencere { max-width: min(460px, calc(100vw - 32px)); padding: 16px 18px; border: 1px solid var(--cizgi);
+    border-radius: 12px; background: var(--kart); color: var(--yazi); box-shadow: 0 10px 30px rgba(0, 0, 0, .25); }
+  .bilgi-pencere::backdrop { background: rgba(0, 0, 0, .25); }
+  .bilgi-pencere p { margin: 8px 0; white-space: pre-line; font-size: .95rem; }
+  .bilgi-pencere button { margin-top: 6px; }
   #tutumToplam { font-weight: 700; margin: 10px 0 0; }
   #tutumToplam.asim { color: var(--hata); }
   .sube { border: 1px solid var(--cizgi); border-radius: 8px; margin-top: 12px; }
@@ -222,7 +231,7 @@
       <dt>Kaynak kod</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime" rel="noopener">github.com/Ataturk-MTAL/MetricusPrime</a></dd>
       <dt>Sorun bildirme</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime/issues" rel="noopener">GitHub üzerinden</a></dd>
       <dt>Kullanılan kütüphaneler</dt><dd>SheetJS (Apache-2.0), docx (MIT)</dd>
-      <dt>Sürüm</dt><dd>1.10 · Ekim 2026</dd>
+      <dt>Sürüm</dt><dd>1.11 · Ekim 2026</dd>
     </dl>
   </section>
 
@@ -295,6 +304,63 @@
 
   // ── Konular ──
   let kimlikSayaci = 0;
+  /** Konu kartındaki alanların açıklamaları (ⓘ düğmesiyle açılır). Paragraflar \n\n ile ayrılır. */
+  const ALAN_ACIKLAMALARI = {
+    baslik: "Öğrenciye verilecek performans görevinin adı. Kısa ve açık yazın.\n\n"
+      + "Örnek: \u201cRöleli DC motor yön kontrol devresi\u201d, \u201cAhi Evran'ın hayatı ve Ahiliğe katkıları\u201d.\n\n"
+      + "Belgede konu listesine, sorular tablosuna ve öğrencinin adının yanına (dağılım listesi) bu ad yazılır.",
+    tur: "Öğrencinin görevi hangi biçimde hazırlayacağı:\n\n"
+      + "\u2022 Uygulama + Rapor: Bir devre, deney ya da ürün yapılır, ardından rapor yazılır.\n"
+      + "\u2022 Araştırma + Rapor: Konu kaynaklardan araştırılır, rapor yazılır.\n"
+      + "\u2022 Araştırma + Sunum: Rapora ek olarak sınıfta 5-7 dakikalık sunum yapılır.\n"
+      + "\u2022 Rapor: Yalnız yazılı rapor hazırlanır; uygulama ya da sunum yoktur.\n\n"
+      + "Seçtiğiniz tür dağılım listesinde öğrencinin adının yanına yazılır ve yönergede açıklanır.",
+    birim: "Konunun yıllık planınızda hangi bölüme ait olduğu. Programlara göre adı değişir:\n\n"
+      + "\u2022 Eski programlarda \u201cmodül\u201d ya da \u201cünite\u201d,\n"
+      + "\u2022 2024 çerçeve programında (10-12. sınıflar) \u201cöğrenme birimi\u201d,\n"
+      + "\u2022 Türkiye Yüzyılı Maarif Modelinde (9. sınıf) \u201ctema\u201d ya da \u201cöğrenme çıktısı\u201d.\n\n"
+      + "Yıllık planınızda yazan adı kullanın. Örnek: \u201cAnahtarlama Devre Uygulamaları\u201d.\n\n"
+      + "Boş bırakılabilir; yalnız konu listesinde bu sütun boş görünür.",
+    urun: "Öğrencinin ne hazırlayıp ne teslim edeceği. Öğrenci görevi alınca ne yapacağını buradan anlar.\n\n"
+      + "Örnek: \u201c12 V röleli devre kurulur; ölçüm tablosu ve el yazısı rapor teslim edilir.\u201d\n\n"
+      + "Belgedeki konu listesinde \u201cÖğrenciden Beklenen Çalışma\u201d sütununa yazılır.",
+    sorular: "Öğrencinin raporunda cevaplayacağı sorular. Her satıra bir soru yazın; belgede kendiliğinden numaralanır.\n\n"
+      + "Konuyu anladığını gösteren, gerekçe isteyen sorular seçin (\u201cNeden?\u201d, \u201cNe olur?\u201d, \u201cHesaplayınız\u201d gibi). "
+      + "İki soru genellikle yeterlidir.\n\n"
+      + "Boş bırakılırsa sorular tablosunda doldurulmak üzere boş satır çıkar.",
+  };
+
+  function bilgiDugmesi(ad, etiketMetni) {
+    const kimlik = `bilgi-${ad}-${++kimlikSayaci}`;
+    const dugme = document.createElement("button");
+    dugme.type = "button";
+    dugme.className = "bilgi";
+    dugme.textContent = "i";
+    dugme.setAttribute("aria-label", `${etiketMetni}: açıklama`);
+    dugme.setAttribute("popovertarget", kimlik);
+    const pencere = document.createElement("div");
+    pencere.id = kimlik;
+    pencere.className = "bilgi-pencere";
+    pencere.setAttribute("popover", "");
+    pencere.setAttribute("role", "dialog");
+    pencere.setAttribute("aria-label", etiketMetni);
+    const baslik = document.createElement("strong");
+    baslik.textContent = etiketMetni;
+    pencere.append(baslik);
+    ALAN_ACIKLAMALARI[ad].split("\n\n").forEach((parca) => {
+      const p = document.createElement("p");
+      p.textContent = parca;
+      pencere.append(p);
+    });
+    const kapat = document.createElement("button");
+    kapat.type = "button";
+    kapat.textContent = "Kapat";
+    kapat.setAttribute("popovertarget", kimlik);
+    kapat.setAttribute("popovertargetaction", "hide");
+    pencere.append(kapat);
+    return [dugme, pencere];
+  }
+
   function alan(kart, etiketMetni, ad, tur, deger) {
     const kimlik = `konu-${ad}-${++kimlikSayaci}`;
     const etiket = document.createElement("label");
@@ -318,7 +384,10 @@
     giris.dataset.alan = ad;
     if (deger) giris.value = deger;
     giris.addEventListener("input", konularDegisti);
-    kart.append(etiket, giris);
+    const satir = document.createElement("div");
+    satir.className = "etiket-satir";
+    satir.append(etiket, ...(ALAN_ACIKLAMALARI[ad] ? bilgiDugmesi(ad, etiketMetni) : []));
+    kart.append(satir, giris);
     return giris;
   }
 
