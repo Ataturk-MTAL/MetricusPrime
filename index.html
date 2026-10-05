@@ -7,197 +7,201 @@
 <link rel="icon" type="image/png" href="logo.png">
 <style>
   :root {
-    --zemin: #f6f7f9; --kart: #ffffff; --yazi: #1c2430; --soluk: #5b6675; --cizgi: #d5dae1;
-    --vurgu: #1f5fbf; --vurgu-yazi: #ffffff; --hata: #b3261e; --hata-zemin: #fdecea; --tamam: #1b6e3c;
+    --bg: #f6f7f9; --card: #ffffff; --text: #1c2430; --muted: #5b6675; --line: #d5dae1;
+    --accent: #1f5fbf; --accent-text: #ffffff; --error: #b3261e; --error-bg: #fdecea; --success: #1b6e3c;
+    --size-title: 1.75rem; --size-section: 1.25rem; --size-small: .8rem;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --zemin: #12161c; --kart: #1b212a; --yazi: #e8ecf1; --soluk: #9aa5b4; --cizgi: #333c49;
-      --vurgu: #6ea8ff; --vurgu-yazi: #0d1420; --hata: #ffb4ab; --hata-zemin: #3a1a17; --tamam: #7fd6a0;
+      --bg: #12161c; --card: #1b212a; --text: #e8ecf1; --muted: #9aa5b4; --line: #333c49;
+      --accent: #6ea8ff; --accent-text: #0d1420; --error: #ffb4ab; --error-bg: #3a1a17; --success: #7fd6a0;
     }
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--zemin); color: var(--yazi); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
   main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
-  h1 { font-size: 1.5rem; margin: 0 0 4px; }
-  h2 { font-size: 1.1rem; margin: 0 0 12px; }
-  p.alt { color: var(--soluk); margin: 0 0 20px; }
-  section { background: var(--kart); border: 1px solid var(--cizgi); border-radius: 12px; padding: 18px; margin-bottom: 16px; }
-  .adim { display: inline-block; width: 1.7em; height: 1.7em; line-height: 1.7em; text-align: center; border-radius: 50%;
-          background: var(--vurgu); color: var(--vurgu-yazi); font-weight: 700; margin-right: 8px; font-size: .9rem; }
-  label { display: block; font-weight: 600; font-size: .9rem; margin: 12px 0 4px; }
+  h1 { font-size: var(--size-title); margin: 0 0 4px; }
+  h2 { font-size: var(--size-section); margin: 0 0 12px; }
+  p.subtitle { color: var(--muted); margin: 0 0 20px; }
+  section { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin-bottom: 16px; }
+  .step { display: inline-block; width: 1.7em; height: 1.7em; line-height: 1.7em; text-align: center; border-radius: 50%;
+          background: var(--accent); color: var(--accent-text); font-weight: 700; margin-right: 8px; font-size: var(--size-small); }
+  label { display: block; font-weight: 600; margin: 12px 0 4px; }
   input[type=text], select, textarea {
-    width: 100%; padding: 9px 10px; border: 1px solid var(--cizgi); border-radius: 8px;
-    background: var(--zemin); color: var(--yazi); font: inherit;
+    width: 100%; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px;
+    background: var(--bg); color: var(--text); font: inherit;
   }
   textarea { min-height: 9.5em; resize: vertical; }
-  input:focus, select:focus, textarea:focus, button:focus-visible { outline: 2px solid var(--vurgu); outline-offset: 1px; }
-  .ikili { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
-  @media (max-width: 560px) { .ikili { grid-template-columns: 1fr; } }
-  .ipucu { color: var(--soluk); font-size: .85rem; margin: 4px 0 0; }
-  .not { border-left: 4px solid var(--vurgu); background: var(--zemin); padding: 8px 12px; border-radius: 0 8px 8px 0; font-size: .9rem; margin: 10px 0 0; }
-  #birak { border: 2px dashed var(--cizgi); border-radius: 12px; padding: 26px 16px; text-align: center; cursor: pointer; }
-  #birak.uzerinde { border-color: var(--vurgu); background: var(--zemin); }
-  button { font: inherit; border-radius: 8px; border: 1px solid var(--cizgi); background: var(--kart); color: var(--yazi); padding: 8px 14px; cursor: pointer; }
-  button.ana { background: var(--vurgu); color: var(--vurgu-yazi); border-color: var(--vurgu); font-weight: 700; padding: 12px 20px; font-size: 1.05rem; width: 100%; }
+  input:focus, select:focus, textarea:focus, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+  @media (max-width: 560px) { .two-col { grid-template-columns: 1fr; } }
+  .hint { color: var(--muted); font-size: var(--size-small); margin: 4px 0 0; }
+  .note { border: 1px solid var(--line); background: var(--bg); padding: 8px 12px; border-radius: 8px; margin: 10px 0 0; }
+  #dropZone { border: 2px dashed var(--line); border-radius: 12px; padding: 26px 16px; text-align: center; cursor: pointer; }
+  #dropZone.drag-over { border-color: var(--accent); background: var(--bg); }
+  button { font: inherit; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--text); padding: 8px 14px; cursor: pointer; }
+  button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 700; padding: 12px 20px; width: 100%; }
+  button.clear-form { width: 100%; margin-top: 8px; color: var(--error); border-color: var(--error); }
   button:disabled { opacity: .5; cursor: not-allowed; }
-  .ogretmen, .madde { display: flex; gap: 8px; margin-bottom: 8px; }
-  .ogretmen button, .madde button { flex: none; }
-  .madde input[type=number] { flex: none; width: 5.2em; padding: 9px 8px; border: 1px solid var(--cizgi); border-radius: 8px;
-    background: var(--zemin); color: var(--yazi); font: inherit; text-align: center; }
-  .madde-baslik { display: flex; gap: 8px; font-weight: 600; font-size: .9rem; margin: 12px 0 4px; }
-  .madde-baslik span:first-child { flex: 1; }
-  .madde-baslik span:nth-child(2) { width: 5.2em; text-align: center; }
-  .madde-baslik span:last-child { width: 3.4em; }
-  .secmeli { font-weight: 400; color: var(--soluk); font-size: .9rem; }
-  .konu { border: 1px solid var(--cizgi); border-radius: 8px; margin-bottom: 8px; }
-  .konu > summary { padding: 9px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .konu > summary span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .konu .ic { padding: 0 12px 12px; }
-  .konu textarea { min-height: 5.5em; }
-  .toplu { margin-top: 12px; }
-  .toplu summary { cursor: pointer; color: var(--vurgu); }
-  .toplu textarea { min-height: 7em; margin-bottom: 8px; }
-  .dagit { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
-  .dagit p { margin: 0; font-weight: 600; }
-  .etiket-satir { display: flex; align-items: center; gap: 8px; margin: 12px 0 4px; }
-  .etiket-satir label { margin: 0; }
-  button.bilgi { width: 1.6em; height: 1.6em; padding: 0; border-radius: 50%; font: italic 700 .85rem/1 Georgia, serif;
-    color: var(--vurgu); border-color: var(--vurgu); flex: none; }
-  .bilgi-pencere { max-width: min(460px, calc(100vw - 32px)); padding: 16px 18px; border: 1px solid var(--cizgi);
-    border-radius: 12px; background: var(--kart); color: var(--yazi); box-shadow: 0 10px 30px rgba(0, 0, 0, .25); }
-  .bilgi-pencere::backdrop { background: rgba(0, 0, 0, .25); }
-  .bilgi-pencere p { margin: 8px 0; white-space: pre-line; font-size: .95rem; }
-  .bilgi-pencere button { margin-top: 6px; }
-  #tutumToplam { font-weight: 700; margin: 10px 0 0; }
-  #tutumToplam.asim { color: var(--hata); }
-  .sube { border: 1px solid var(--cizgi); border-radius: 8px; margin-top: 12px; }
-  .sube summary { padding: 10px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .sube table { width: 100%; border-collapse: collapse; font-size: .9rem; }
-  .sube td, .sube th { padding: 4px 12px; border-top: 1px solid var(--cizgi); text-align: left; }
-  .sube .kaydir { max-height: 260px; overflow-y: auto; }
-  .hata { background: var(--hata-zemin); color: var(--hata); border-radius: 8px; padding: 10px 12px; margin-top: 12px; }
-  .tamam { color: var(--tamam); font-weight: 600; margin-top: 12px; }
-  .radyo { display: flex; gap: 18px; flex-wrap: wrap; }
-  .radyo label { font-weight: 400; margin: 0; display: flex; align-items: center; gap: 6px; }
-  footer { color: var(--soluk); font-size: .85rem; text-align: center; margin-top: 20px; }
-  header.ust { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
-  header.ust img { width: 72px; height: 72px; flex: none; border-radius: 50%; background: #ffffff; }
-  header.ust .okul { color: var(--soluk); font-size: .9rem; margin: 0; }
-  .hakkinda p, .hakkinda li { font-size: .95rem; }
-  .hakkinda ul { padding-left: 1.2em; margin: 8px 0; }
-  .hakkinda dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 12px 0 0; font-size: .95rem; }
-  .hakkinda dt { font-weight: 600; }
-  .hakkinda dd { margin: 0; }
-  a { color: var(--vurgu); }
-  a.dugme { display: inline-block; text-decoration: none; background: var(--vurgu); color: var(--vurgu-yazi); font-weight: 700; padding: 9px 16px; border-radius: 8px; }
+  .teacher, .item { display: flex; gap: 8px; margin-bottom: 8px; }
+  .teacher button, .item button { flex: none; }
+  .item input[type=number] { flex: none; width: 5.2em; padding: 9px 8px; border: 1px solid var(--line); border-radius: 8px;
+    background: var(--bg); color: var(--text); font: inherit; text-align: center; }
+  .item-header { display: flex; gap: 8px; font-weight: 600; font-size: var(--size-small); margin: 12px 0 4px; }
+  .item-header span:first-child { flex: 1; }
+  .item-header span:nth-child(2) { width: 5.2em; text-align: center; }
+  .item-header span:last-child { width: 3.4em; }
+  .optional { font-weight: 400; color: var(--muted); font-size: var(--size-small); }
+  .topic { border: 1px solid var(--line); border-radius: 8px; margin-bottom: 8px; }
+  .topic > summary { padding: 9px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .topic > summary span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .topic .inner { padding: 0 12px 12px; }
+  .topic textarea { min-height: 5.5em; }
+  .bulk { margin-top: 12px; }
+  .bulk summary { cursor: pointer; color: var(--accent); }
+  .bulk textarea { min-height: 7em; margin-bottom: 8px; }
+  .action-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+  .action-row p { margin: 0; font-weight: 600; }
+  .label-row { display: flex; align-items: center; gap: 8px; margin: 12px 0 4px; }
+  .label-row label { margin: 0; }
+  button.info { width: 1.6em; height: 1.6em; padding: 0; border-radius: 50%; font: italic 700 var(--size-small)/1 Georgia, serif;
+    color: var(--accent); border-color: var(--accent); flex: none; }
+  .info-popover { max-width: min(460px, calc(100vw - 32px)); padding: 16px 18px; border: 1px solid var(--line);
+    border-radius: 12px; background: var(--card); color: var(--text); box-shadow: 0 10px 30px rgba(0, 0, 0, .25); }
+  .info-popover::backdrop { background: rgba(0, 0, 0, .25); }
+  .info-popover p { margin: 8px 0; white-space: pre-line; }
+  .info-popover button { margin-top: 6px; }
+  #attitudeTotal { font-weight: 700; margin: 10px 0 0; }
+  #attitudeTotal.over-limit { color: var(--error); }
+  .class-section { border: 1px solid var(--line); border-radius: 8px; margin-top: 12px; }
+  .class-section summary { padding: 10px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .class-section table { width: 100%; border-collapse: collapse; font-size: var(--size-small); }
+  .class-section td, .class-section th { padding: 4px 12px; border-top: 1px solid var(--line); text-align: left; }
+  .class-section .scroll { max-height: 260px; overflow-y: auto; }
+  .error { background: var(--error-bg); color: var(--error); border-radius: 8px; padding: 10px 12px; margin-top: 12px; }
+  .success { color: var(--success); font-weight: 600; margin-top: 12px; }
+  .radio-group { display: flex; gap: 18px; flex-wrap: wrap; }
+  .radio-group label { font-weight: 400; margin: 0; display: flex; align-items: center; gap: 6px; }
+  footer { color: var(--muted); font-size: var(--size-small); text-align: center; margin-top: 20px; }
+  header.site-header { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+  header.site-header img { width: 72px; height: 72px; flex: none; border-radius: 50%; background: #ffffff; }
+  header.site-header .school-name { color: var(--muted); font-size: var(--size-small); margin: 0; }
+  .info-section ul { padding-left: 1.2em; margin: 8px 0; }
+  .info-section dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 12px 0 0; }
+  .info-section dt { font-weight: 600; }
+  .info-section dd { margin: 0; }
+  a { color: var(--accent); }
+  a.button-link { display: inline-block; text-decoration: none; background: var(--accent); color: var(--accent-text); font-weight: 700; padding: 9px 16px; border-radius: 8px; }
 </style>
 </head>
 <body>
 <main>
-  <header class="ust">
+  <header class="site-header">
     <img src="logo.png" alt="Mersin Atatürk Mesleki ve Teknik Anadolu Lisesi logosu" width="72" height="72">
     <div>
-      <p class="okul">Mersin Atatürk Mesleki ve Teknik Anadolu Lisesi</p>
+      <p class="school-name">Mersin Atatürk Mesleki ve Teknik Anadolu Lisesi</p>
       <h1>Performans Yönergesi ve Çizelgesi Oluşturma</h1>
     </div>
   </header>
-  <p class="alt">e-Okul sınıf listesini yükleyin, bilgileri doldurun, Word belgesini indirin.
+  <p class="subtitle">e-Okul sınıf listesini yükleyin, bilgileri doldurun, Word belgesini indirin.
     Sınıf listesi bilgisayarınızdan dışarı çıkmaz; hiçbir veri sunucuda tutulmaz (<a href="#kvkk">Gizlilik ve KVKK</a>).</p>
 
-  <section aria-labelledby="b1">
-    <h2 id="b1"><span class="adim">1</span>Sınıf listesi</h2>
-    <div id="birak" role="button" tabindex="0" aria-describedby="birakIpucu">
+  <section aria-labelledby="step1Title">
+    <h2 id="step1Title"><span class="step">1</span>Sınıf listesi</h2>
+    <div id="dropZone" role="button" tabindex="0" aria-describedby="dropZoneHint">
       <strong>e-Okul sınıf listesini (XLS) buraya sürükleyin</strong><br>veya tıklayıp seçin
     </div>
-    <input type="file" id="dosya" accept=".xls,.xlsx" multiple hidden>
-    <p class="not" id="birakIpucu"><strong>Önemli:</strong> e-Okul'da Sınıf Listesi raporunu dışa aktarırken biçim olarak
+    <input type="file" id="fileInput" accept=".xls,.xlsx" multiple hidden>
+    <p class="note" id="dropZoneHint"><strong>Önemli:</strong> e-Okul'da Sınıf Listesi raporunu dışa aktarırken biçim olarak
       <strong>"Excel (Sadece Veri)"</strong> seçin. Diğer Excel seçenekleriyle alınan dosyalar okunamayabilir.</p>
-    <p class="ipucu">Birden fazla şube için dosyaları birlikte ekleyebilirsiniz.</p>
-    <div id="dosyaHata" class="hata" role="alert" hidden></div>
-    <div id="subeler"></div>
+    <p class="hint">Birden fazla şube için dosyaları birlikte ekleyebilirsiniz.</p>
+    <div id="fileError" class="error" role="alert" hidden></div>
+    <div id="classSections"></div>
   </section>
 
-  <section aria-labelledby="b2">
-    <h2 id="b2"><span class="adim">2</span>Ders bilgileri</h2>
-    <label for="okul">Okulun adı</label>
-    <input type="text" id="okul" autocomplete="organization">
-    <label for="ders">Dersin adı</label>
-    <input type="text" id="ders" placeholder="ör. Analog-Dijital Elektronik Atölyesi">
-    <div class="ikili">
-      <div><label for="egitimYili">Eğitim-öğretim yılı</label><input type="text" id="egitimYili" placeholder="2026-2027"></div>
-      <div><label for="donem">Dönem</label><select id="donem"><option value="1">1. dönem</option><option value="2">2. dönem</option></select></div>
-      <div><label for="verilis">Görevin veriliş tarihi</label><input type="text" id="verilis" placeholder="5-9 Ekim 2026"></div>
-      <div><label for="planTeslim">Çalışma planı teslimi</label><input type="text" id="planTeslim" placeholder="16 Ekim 2026"></div>
-      <div><label for="araKontrol">Ara kontrol</label><input type="text" id="araKontrol" placeholder="30 Kasım - 4 Aralık 2026"></div>
-      <div><label for="teslim">Görevin teslim tarihi</label><input type="text" id="teslim" placeholder="21-25 Aralık 2026"></div>
+  <section aria-labelledby="step2Title">
+    <h2 id="step2Title"><span class="step">2</span>Ders bilgileri</h2>
+    <label for="school">Okulun adı</label>
+    <input type="text" id="school" autocomplete="organization">
+    <label for="course">Dersin adı</label>
+    <input type="text" id="course" placeholder="ör. Analog-Dijital Elektronik Atölyesi">
+    <div class="two-col">
+      <div><label for="academicYear">Eğitim-öğretim yılı</label><input type="text" id="academicYear" placeholder="2026-2027"></div>
+      <div><label for="term">Dönem</label><select id="term"><option value="1">1. dönem</option><option value="2">2. dönem</option></select></div>
+      <div><label for="assignedDate">Görevin veriliş tarihi</label><input type="text" id="assignedDate" placeholder="5-9 Ekim 2026"></div>
+      <div><label for="planDueDate">Çalışma planı teslimi</label><input type="text" id="planDueDate" placeholder="16 Ekim 2026"></div>
+      <div><label for="interimCheckDate">Ara kontrol</label><input type="text" id="interimCheckDate" placeholder="30 Kasım - 4 Aralık 2026"></div>
+      <div><label for="dueDate">Görevin teslim tarihi</label><input type="text" id="dueDate" placeholder="21-25 Aralık 2026"></div>
     </div>
   </section>
 
-  <section aria-labelledby="b3">
-    <h2 id="b3"><span class="adim">3</span>Öğretmenler ve onay</h2>
-    <label id="ogretmenEtiket">Ders öğretmenleri</label>
-    <div id="ogretmenler" aria-labelledby="ogretmenEtiket"></div>
-    <button type="button" id="ogretmenEkle">+ Öğretmen ekle</button>
-    <p class="ipucu">Okul müdürünün adı belgeye yazılmaz; onay bölümünde elle yazılması için boş bırakılır.</p>
+  <section aria-labelledby="step3Title">
+    <h2 id="step3Title"><span class="step">3</span>Öğretmenler ve onay</h2>
+    <label id="teachersLabel">Ders öğretmenleri</label>
+    <div id="teachers" aria-labelledby="teachersLabel"></div>
+    <button type="button" id="addTeacher">+ Öğretmen ekle</button>
+    <p class="hint">Okul müdürünün adı belgeye yazılmaz; onay bölümünde elle yazılması için boş bırakılır.</p>
   </section>
 
-  <section aria-labelledby="b4k">
-    <h2 id="b4k"><span class="adim">4</span>Konular ve sorular <span class="secmeli">(isteğe bağlı)</span></h2>
-    <p class="ipucu" style="margin:0 0 10px">Konuları burada girerseniz öğrencilere rastgele dağıtılır ve belgeye yazılır.
+  <section aria-labelledby="step4Title">
+    <h2 id="step4Title"><span class="step">4</span>Konular ve sorular <span class="optional">(isteğe bağlı)</span></h2>
+    <p class="hint" style="margin:0 0 10px">Konuları burada girerseniz öğrencilere rastgele dağıtılır ve belgeye yazılır.
       Öğrenci sayısı kadar konu gerekmez; konu azsa her konu eşit sayıda öğrenciye verilir.
       Boş bırakırsanız tablolar Word'de doldurulmak üzere boş gelir.</p>
-    <div id="konular"></div>
-    <button type="button" id="konuEkle">+ Konu ekle</button>
-    <details class="toplu">
+    <div id="topics"></div>
+    <button type="button" id="addTopic">+ Konu ekle</button>
+    <details class="bulk">
       <summary>Toplu ekle (listeyi yapıştır)</summary>
-      <label for="topluMetin">Her satır bir konu. Excel'den kopyalarsanız sütun sırası: Konu, Öğrenme birimi, Görev türü, Beklenen çalışma. Görev türü: Uygulama + Rapor, Araştırma + Rapor, Araştırma + Sunum ya da Rapor; başka bir şey yazılırsa Uygulama + Rapor seçilir.</label>
-      <textarea id="topluMetin" placeholder="Röleli DC motor yön kontrol devresi&#10;Transistörlü zamanlayıcı devresi&#10;…"></textarea>
-      <button type="button" id="topluEkle">Listeden ekle</button>
+      <label for="bulkText">Her satır bir konu. Excel'den kopyalarsanız sütun sırası: Konu, Öğrenme birimi, Görev türü, Beklenen çalışma. Görev türü: Uygulama + Rapor, Araştırma + Rapor, Araştırma + Sunum ya da Rapor; başka bir şey yazılırsa Uygulama + Rapor seçilir.</label>
+      <textarea id="bulkText" placeholder="Röleli DC motor yön kontrol devresi&#10;Transistörlü zamanlayıcı devresi&#10;…"></textarea>
+      <button type="button" id="bulkAdd">Listeden ekle</button>
     </details>
-    <div class="dagit">
-      <button type="button" id="dagit" disabled>Rastgele dağıt</button>
-      <p id="dagitDurum" role="status"></p>
+    <div class="action-row">
+      <button type="button" id="distribute" disabled>Rastgele dağıt</button>
+      <p id="distributeStatus" role="status"></p>
     </div>
-    <p class="ipucu">Dağılımı beğenmezseniz yeniden dağıtın. Word belgesine, ekranda gördüğünüz son dağılım yazılır
+    <p class="hint">Dağılımı beğenmezseniz yeniden dağıtın. Word belgesine, ekranda gördüğünüz son dağılım yazılır
       (sınıf listesindeki "Konu" sütunu). Belgeyi indirdikten sonra yeniden dağıtırsanız kâğıtla uyuşmaz.</p>
   </section>
 
-  <section aria-labelledby="b4">
-    <h2 id="b4"><span class="adim">5</span>Tutum ve davranış ölçeği</h2>
-    <div class="radyo" role="radiogroup" aria-label="Ders türü">
-      <label><input type="radio" name="dersTuru" value="atolye" checked> Atölye dersi</label>
-      <label><input type="radio" name="dersTuru" value="sinif"> Sınıf / laboratuvar dersi</label>
+  <section aria-labelledby="step5Title">
+    <h2 id="step5Title"><span class="step">5</span>Tutum ve davranış ölçeği</h2>
+    <div class="radio-group" role="radiogroup" aria-label="Ders türü">
+      <label><input type="radio" name="courseType" value="workshop" checked> Atölye dersi</label>
+      <label><input type="radio" name="courseType" value="classroom"> Sınıf / laboratuvar dersi</label>
     </div>
-    <div class="madde-baslik" aria-hidden="true"><span>Gözlenecek özellik</span><span>Puan</span><span></span></div>
-    <div id="tutum"></div>
-    <button type="button" id="maddeEkle">+ Madde ekle</button>
-    <p id="tutumToplam" role="status"></p>
-    <p class="ipucu">Hazır maddeleri olduğu gibi bırakabilir ya da dersinize göre değiştirebilirsiniz. Toplam puan 100'ü geçemez.</p>
+    <div class="item-header" aria-hidden="true"><span>Gözlenecek özellik</span><span>Puan</span><span></span></div>
+    <div id="attitude"></div>
+    <button type="button" id="addItem">+ Madde ekle</button>
+    <p id="attitudeTotal" role="status"></p>
+    <p class="hint">Hazır maddeleri olduğu gibi bırakabilir ya da dersinize göre değiştirebilirsiniz. Toplam puan 100'ü geçemez.</p>
   </section>
 
-  <button type="button" class="ana" id="olustur" disabled>Word belgesini oluştur</button>
-  <div id="sonuc" role="status"></div>
-  <p class="ipucu">Görevin amacı ve güvenlik kuralları Word belgesinde boş gelir; onları Word'de yazarsınız.
+  <button type="button" class="primary" id="generate" disabled>Word belgesini oluştur</button>
+  <button type="button" class="clear-form" id="clearForm">Formu temizle</button>
+  <div id="result" role="status"></div>
+  <p class="hint">Görevin amacı ve güvenlik kuralları Word belgesinde boş gelir; onları Word'de yazarsınız.
     Dereceli puanlama anahtarı dolu gelir. Belgedeki her şeyi sonradan Word'de düzeltebilirsiniz.</p>
 
-  <section class="hakkinda" aria-labelledby="ornek" style="margin-top:24px">
+  <!-- The ids "ornek", "kvkk" and "hakkinda" stay Turkish on purpose: they are in-page anchors
+       (e.g. href="#kvkk") and renaming them would break links that have already been shared. -->
+  <section class="info-section" aria-labelledby="ornek" style="margin-top:24px">
     <h2 id="ornek">Öğrenciler için örnek rapor</h2>
     <p>Öğrencilerinize raporun nasıl hazırlanacağını göstermek için paylaşabileceğiniz 6 sayfalık örnek rapor (PDF).
       Her bölümün başında o bölüme ne yazılacağı açıklanır; kapak, amaç, teorik bilgi, devre şeması, hesaplamalar,
       ölçüm tablosu, soruların cevapları, sonuç ve kaynakça örnekleri vardır.</p>
-    <div class="dagit" style="margin-top:8px">
-      <a class="dugme" href="ornek-rapor.pdf" download="Ornek-Performans-Gorevi-Raporu.pdf">Örnek raporu indir (PDF)</a>
+    <div class="action-row" style="margin-top:8px">
+      <a class="button-link" href="ornek-rapor.pdf" download="Ornek-Performans-Gorevi-Raporu.pdf">Örnek raporu indir (PDF)</a>
       <a href="ornek-rapor.pdf" target="_blank" rel="noopener">Tarayıcıda aç</a>
-      <button type="button" id="baglantiKopyala">Paylaşım bağlantısını kopyala</button>
+      <button type="button" id="copyLink">Paylaşım bağlantısını kopyala</button>
     </div>
-    <p id="kopyaDurum" role="status" class="ipucu"></p>
-    <p class="ipucu">Örnek, Analog-Dijital Elektronik Atölyesi dersinden bir uygulama konusudur (transistörlü su/yağmur algılayıcı);
+    <p id="copyStatus" role="status" class="hint"></p>
+    <p class="hint">Örnek, Analog-Dijital Elektronik Atölyesi dersinden bir uygulama konusudur (transistörlü su/yağmur algılayıcı);
       başka derslerde biçim örneği olarak kullanılabilir. Raporda öğrenci bilgisi yoktur ve her sayfasında
       "kendi raporunuzu el yazısıyla ve kendi cümlelerinizle hazırlayınız" uyarısı bulunur.</p>
   </section>
 
-  <section class="hakkinda" aria-labelledby="kvkk">
+  <section class="info-section" aria-labelledby="kvkk">
     <h2 id="kvkk">Gizlilik ve KVKK</h2>
     <p>Bu sayfa, 6698 sayılı Kişisel Verilerin Korunması Kanunu'na (KVKK) uygun olacak biçimde tasarlanmıştır:
       <strong>hiçbir kişisel veri sunucuya gönderilmez ve sunucuda tutulmaz.</strong></p>
@@ -209,13 +213,13 @@
       <li>Sayfada çerez, reklam, izleme ya da istatistik aracı yoktur; üye girişi istenmez.</li>
       <li>Word belgesi tarayıcınızda üretilir ve doğrudan bilgisayarınıza iner.</li>
     </ul>
-    <p class="ipucu">Üretilen Word belgesi öğrenci adlarını içerir; belgenin saklanması ve paylaşılması onu indiren öğretmenin sorumluluğundadır.
+    <p class="hint">Üretilen Word belgesi öğrenci adlarını içerir; belgenin saklanması ve paylaşılması onu indiren öğretmenin sorumluluğundadır.
       Sayfa GitHub Pages üzerinde barındırılır; GitHub, her web sitesinde olduğu gibi ziyaretin teknik kayıtlarını (IP adresi gibi) tutabilir.
       Bu kayıtlarda sınıf listesine ait hiçbir bilgi bulunmaz.</p>
-    <button type="button" id="formuTemizle">Bu cihazda saklanan form bilgilerini sil</button>
+    <button type="button" id="clearSavedData">Bu cihazda saklanan form bilgilerini sil</button>
   </section>
 
-  <section class="hakkinda" aria-labelledby="hakkinda">
+  <section class="info-section" aria-labelledby="hakkinda">
     <h2 id="hakkinda">Hakkında</h2>
     <p><strong>MetricusPrime</strong>, öğretmenlerin performans görevi belgelerini e-Okul sınıf listesinden birkaç dakikada
       hazırlaması için Mersin Atatürk Mesleki ve Teknik Anadolu Lisesi Elektrik-Elektronik Teknolojisi Alanı'nda geliştirildi.</p>
@@ -231,7 +235,7 @@
       <dt>Kaynak kod</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime" rel="noopener">github.com/Ataturk-MTAL/MetricusPrime</a></dd>
       <dt>Sorun bildirme</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime/issues" rel="noopener">GitHub üzerinden</a></dd>
       <dt>Kullanılan kütüphaneler</dt><dd>SheetJS (Apache-2.0), docx (MIT)</dd>
-      <dt>Sürüm</dt><dd>1.11 · Ekim 2026</dd>
+      <dt>Sürüm</dt><dd>1.13 · Ekim 2026</dd>
     </dl>
   </section>
 
@@ -244,430 +248,463 @@
 <script>
 (function () {
   "use strict";
-  const KAYIT_ANAHTARI = "metricusprime.form.v2";
-  const TOPLU_SUTUNLAR = ["baslik", "birim", "tur", "urun"];
-  const METIN_ALANLARI = ["okul", "ders", "egitimYili", "donem", "verilis", "planTeslim", "araKontrol", "teslim"];
-  const PG = window.PerformansGorevi;
-  const GOREV_TURLERI = PG.GOREV_TURU_ADLARI;
+  const STORAGE_KEY = "metricusprime.form.v3";
+  const LEGACY_STORAGE_KEY = "metricusprime.form.v2"; // Turkish field names; migrated to v3 on load
+  const BULK_COLUMNS = ["title", "unit", "type", "deliverable"];
+  const TEXT_FIELDS = ["school", "course", "academicYear", "term", "assignedDate", "planDueDate", "interimCheckDate", "dueDate"];
+  const PT = window.PerformanceTask;
+  const TASK_TYPES = PT.TASK_TYPE_NAMES;
   const $ = (id) => document.getElementById(id);
-  let siniflar = [];
+  let classes = [];
 
-  // ── Form: kaydet / geri yükle (öğrenci listesi saklanmaz) ──
-  function dersTuru() {
-    return document.querySelector("input[name=dersTuru]:checked").value;
+  // ── Form: save / restore (the student list is not stored) ──
+  function courseType() {
+    return document.querySelector("input[name=courseType]:checked").value;
   }
-  function formuOku() {
-    const bilgi = Object.fromEntries(METIN_ALANLARI.map((id) => [id, $(id).value]));
-    bilgi.ogretmenler = [...document.querySelectorAll("#ogretmenler input")].map((i) => i.value);
-    bilgi.dersTuru = dersTuru();
-    bilgi.konular = [...document.querySelectorAll("#konular .konu")].map((kart) => ({
-      baslik: kart.querySelector("[data-alan=baslik]").value,
-      birim: kart.querySelector("[data-alan=birim]").value,
-      tur: kart.querySelector("[data-alan=tur]").value,
-      urun: kart.querySelector("[data-alan=urun]").value,
-      sorular: kart.querySelector("[data-alan=sorular]").value.split("\n"),
+  function readForm() {
+    const form = Object.fromEntries(TEXT_FIELDS.map((id) => [id, $(id).value]));
+    form.teachers = [...document.querySelectorAll("#teachers input")].map((i) => i.value);
+    form.courseType = courseType();
+    form.topics = [...document.querySelectorAll("#topics .topic")].map((card) => ({
+      title: card.querySelector("[data-field=title]").value,
+      unit: card.querySelector("[data-field=unit]").value,
+      type: card.querySelector("[data-field=type]").value,
+      deliverable: card.querySelector("[data-field=deliverable]").value,
+      questions: card.querySelector("[data-field=questions]").value.split("\n"),
     }));
-    bilgi.tutum = [...document.querySelectorAll("#tutum .madde")].map((satir) => ({
-      metin: satir.querySelector("input[type=text]").value,
-      puan: satir.querySelector("input[type=number]").value,
+    form.attitude = [...document.querySelectorAll("#attitude .item")].map((row) => ({
+      text: row.querySelector("input[type=text]").value,
+      points: row.querySelector("input[type=number]").value,
     }));
-    return bilgi;
+    return form;
   }
-  function kaydet() {
-    try { localStorage.setItem(KAYIT_ANAHTARI, JSON.stringify(formuOku())); } catch (hata) { /* gizli pencerede saklama kapalı olabilir */ }
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(readForm())); } catch (error) { /* storage may be disabled in a private window */ }
   }
-  function kayitliBilgi() {
-    try { return JSON.parse(localStorage.getItem(KAYIT_ANAHTARI)) || {}; } catch (hata) { return {}; }
+  /** Converts form data saved under the v2 key (Turkish field names) to the v3 shape. */
+  function migrateFormV2(old) {
+    const list = (value) => (Array.isArray(value) ? value : []);
+    return {
+      school: old.okul, course: old.ders, academicYear: old.egitimYili, term: old.donem,
+      assignedDate: old.verilis, planDueDate: old.planTeslim, interimCheckDate: old.araKontrol, dueDate: old.teslim,
+      teachers: old.ogretmenler,
+      courseType: old.dersTuru === "sinif" ? "classroom" : "workshop",
+      topics: list(old.konular).map((topic) => ({
+        title: topic.baslik, unit: topic.birim, type: topic.tur, deliverable: topic.urun, questions: topic.sorular,
+      })),
+      attitude: list(old.tutum).map((item) => ({ text: item.metin, points: item.puan })),
+    };
+  }
+  function savedForm() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (saved) return saved;
+      const legacy = JSON.parse(localStorage.getItem(LEGACY_STORAGE_KEY));
+      if (!legacy) return {};
+      const migrated = migrateFormV2(legacy);
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
+        localStorage.removeItem(LEGACY_STORAGE_KEY);
+      } catch (error) { /* v2 is kept when v3 cannot be written */ }
+      return migrated;
+    } catch (error) { return {}; }
   }
 
-  function ogretmenSatiri(deger) {
-    const satir = document.createElement("div");
-    satir.className = "ogretmen";
-    const giris = document.createElement("input");
-    giris.type = "text";
-    giris.placeholder = "Adı SOYADI";
-    giris.value = deger || "";
-    giris.setAttribute("aria-label", "Öğretmen adı soyadı");
-    giris.addEventListener("input", kaydet);
-    const sil = document.createElement("button");
-    sil.type = "button";
-    sil.textContent = "Sil";
-    sil.addEventListener("click", () => {
-      satir.remove();
-      if (!document.querySelector("#ogretmenler input")) ogretmenSatiri("");
-      kaydet();
+  function teacherRow(value) {
+    const row = document.createElement("div");
+    row.className = "teacher";
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "Adı SOYADI";
+    input.value = value || "";
+    input.setAttribute("aria-label", "Öğretmen adı soyadı");
+    input.addEventListener("input", save);
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.textContent = "Sil";
+    remove.addEventListener("click", () => {
+      row.remove();
+      if (!document.querySelector("#teachers input")) teacherRow("");
+      save();
     });
-    satir.append(giris, sil);
-    $("ogretmenler").append(satir);
-    return giris;
+    row.append(input, remove);
+    $("teachers").append(row);
+    return input;
   }
 
-  // ── Konular ──
-  let kimlikSayaci = 0;
-  /** Konu kartındaki alanların açıklamaları (ⓘ düğmesiyle açılır). Paragraflar \n\n ile ayrılır. */
-  const ALAN_ACIKLAMALARI = {
-    baslik: "Öğrenciye verilecek performans görevinin adı. Kısa ve açık yazın.\n\n"
-      + "Örnek: \u201cRöleli DC motor yön kontrol devresi\u201d, \u201cAhi Evran'ın hayatı ve Ahiliğe katkıları\u201d.\n\n"
+  // ── Topics ──
+  let idCounter = 0;
+  /** Help texts for the topic card fields (opened with the ⓘ button). Paragraphs are separated by \n\n. */
+  const FIELD_HELP = {
+    title: "Öğrenciye verilecek performans görevinin adı. Kısa ve açık yazın.\n\n"
+      + "Örnek: “Röleli DC motor yön kontrol devresi”, “Ahi Evran'ın hayatı ve Ahiliğe katkıları”.\n\n"
       + "Belgede konu listesine, sorular tablosuna ve öğrencinin adının yanına (dağılım listesi) bu ad yazılır.",
-    tur: "Öğrencinin görevi hangi biçimde hazırlayacağı:\n\n"
-      + "\u2022 Uygulama + Rapor: Bir devre, deney ya da ürün yapılır, ardından rapor yazılır.\n"
-      + "\u2022 Araştırma + Rapor: Konu kaynaklardan araştırılır, rapor yazılır.\n"
-      + "\u2022 Araştırma + Sunum: Rapora ek olarak sınıfta 5-7 dakikalık sunum yapılır.\n"
-      + "\u2022 Rapor: Yalnız yazılı rapor hazırlanır; uygulama ya da sunum yoktur.\n\n"
+    type: "Öğrencinin görevi hangi biçimde hazırlayacağı:\n\n"
+      + "• Uygulama + Rapor: Bir devre, deney ya da ürün yapılır, ardından rapor yazılır.\n"
+      + "• Araştırma + Rapor: Konu kaynaklardan araştırılır, rapor yazılır.\n"
+      + "• Araştırma + Sunum: Rapora ek olarak sınıfta 5-7 dakikalık sunum yapılır.\n"
+      + "• Rapor: Yalnız yazılı rapor hazırlanır; uygulama ya da sunum yoktur.\n\n"
       + "Seçtiğiniz tür dağılım listesinde öğrencinin adının yanına yazılır ve yönergede açıklanır.",
-    birim: "Konunun yıllık planınızda hangi bölüme ait olduğu. Programlara göre adı değişir:\n\n"
-      + "\u2022 Eski programlarda \u201cmodül\u201d ya da \u201cünite\u201d,\n"
-      + "\u2022 2024 çerçeve programında (10-12. sınıflar) \u201cöğrenme birimi\u201d,\n"
-      + "\u2022 Türkiye Yüzyılı Maarif Modelinde (9. sınıf) \u201ctema\u201d ya da \u201cöğrenme çıktısı\u201d.\n\n"
-      + "Yıllık planınızda yazan adı kullanın. Örnek: \u201cAnahtarlama Devre Uygulamaları\u201d.\n\n"
+    unit: "Konunun yıllık planınızda hangi bölüme ait olduğu. Programlara göre adı değişir:\n\n"
+      + "• Eski programlarda “modül” ya da “ünite”,\n"
+      + "• 2024 çerçeve programında (10-12. sınıflar) “öğrenme birimi”,\n"
+      + "• Türkiye Yüzyılı Maarif Modelinde (9. sınıf) “tema” ya da “öğrenme çıktısı”.\n\n"
+      + "Yıllık planınızda yazan adı kullanın. Örnek: “Anahtarlama Devre Uygulamaları”.\n\n"
       + "Boş bırakılabilir; yalnız konu listesinde bu sütun boş görünür.",
-    urun: "Öğrencinin ne hazırlayıp ne teslim edeceği. Öğrenci görevi alınca ne yapacağını buradan anlar.\n\n"
-      + "Örnek: \u201c12 V röleli devre kurulur; ölçüm tablosu ve el yazısı rapor teslim edilir.\u201d\n\n"
-      + "Belgedeki konu listesinde \u201cÖğrenciden Beklenen Çalışma\u201d sütununa yazılır.",
-    sorular: "Öğrencinin raporunda cevaplayacağı sorular. Her satıra bir soru yazın; belgede kendiliğinden numaralanır.\n\n"
-      + "Konuyu anladığını gösteren, gerekçe isteyen sorular seçin (\u201cNeden?\u201d, \u201cNe olur?\u201d, \u201cHesaplayınız\u201d gibi). "
+    deliverable: "Öğrencinin ne hazırlayıp ne teslim edeceği. Öğrenci görevi alınca ne yapacağını buradan anlar.\n\n"
+      + "Örnek: “12 V röleli devre kurulur; ölçüm tablosu ve el yazısı rapor teslim edilir.”\n\n"
+      + "Belgedeki konu listesinde “Öğrenciden Beklenen Çalışma” sütununa yazılır.",
+    questions: "Öğrencinin raporunda cevaplayacağı sorular. Her satıra bir soru yazın; belgede kendiliğinden numaralanır.\n\n"
+      + "Konuyu anladığını gösteren, gerekçe isteyen sorular seçin (“Neden?”, “Ne olur?”, “Hesaplayınız” gibi). "
       + "İki soru genellikle yeterlidir.\n\n"
       + "Boş bırakılırsa sorular tablosunda doldurulmak üzere boş satır çıkar.",
   };
 
-  function bilgiDugmesi(ad, etiketMetni) {
-    const kimlik = `bilgi-${ad}-${++kimlikSayaci}`;
-    const dugme = document.createElement("button");
-    dugme.type = "button";
-    dugme.className = "bilgi";
-    dugme.textContent = "i";
-    dugme.setAttribute("aria-label", `${etiketMetni}: açıklama`);
-    dugme.setAttribute("popovertarget", kimlik);
-    const pencere = document.createElement("div");
-    pencere.id = kimlik;
-    pencere.className = "bilgi-pencere";
-    pencere.setAttribute("popover", "");
-    pencere.setAttribute("role", "dialog");
-    pencere.setAttribute("aria-label", etiketMetni);
-    const baslik = document.createElement("strong");
-    baslik.textContent = etiketMetni;
-    pencere.append(baslik);
-    ALAN_ACIKLAMALARI[ad].split("\n\n").forEach((parca) => {
+  function infoButton(name, labelText) {
+    const id = `info-${name}-${++idCounter}`;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "info";
+    button.textContent = "i";
+    button.setAttribute("aria-label", `${labelText}: açıklama`);
+    button.setAttribute("popovertarget", id);
+    const popover = document.createElement("div");
+    popover.id = id;
+    popover.className = "info-popover";
+    popover.setAttribute("popover", "");
+    popover.setAttribute("role", "dialog");
+    popover.setAttribute("aria-label", labelText);
+    const heading = document.createElement("strong");
+    heading.textContent = labelText;
+    popover.append(heading);
+    FIELD_HELP[name].split("\n\n").forEach((part) => {
       const p = document.createElement("p");
-      p.textContent = parca;
-      pencere.append(p);
+      p.textContent = part;
+      popover.append(p);
     });
-    const kapat = document.createElement("button");
-    kapat.type = "button";
-    kapat.textContent = "Kapat";
-    kapat.setAttribute("popovertarget", kimlik);
-    kapat.setAttribute("popovertargetaction", "hide");
-    pencere.append(kapat);
-    return [dugme, pencere];
+    const close = document.createElement("button");
+    close.type = "button";
+    close.textContent = "Kapat";
+    close.setAttribute("popovertarget", id);
+    close.setAttribute("popovertargetaction", "hide");
+    popover.append(close);
+    return [button, popover];
   }
 
-  function alan(kart, etiketMetni, ad, tur, deger) {
-    const kimlik = `konu-${ad}-${++kimlikSayaci}`;
-    const etiket = document.createElement("label");
-    etiket.htmlFor = kimlik;
-    etiket.textContent = etiketMetni;
-    let giris;
-    if (tur === "metin-alani") {
-      giris = document.createElement("textarea");
-    } else if (tur === "secim") {
-      giris = document.createElement("select");
-      GOREV_TURLERI.forEach((secenek) => {
+  function field(card, labelText, name, kind, value) {
+    const id = `topic-${name}-${++idCounter}`;
+    const label = document.createElement("label");
+    label.htmlFor = id;
+    label.textContent = labelText;
+    let input;
+    if (kind === "textarea") {
+      input = document.createElement("textarea");
+    } else if (kind === "select") {
+      input = document.createElement("select");
+      TASK_TYPES.forEach((option) => {
         const o = document.createElement("option");
-        o.value = o.textContent = secenek;
-        giris.append(o);
+        o.value = o.textContent = option;
+        input.append(o);
       });
     } else {
-      giris = document.createElement("input");
-      giris.type = "text";
+      input = document.createElement("input");
+      input.type = "text";
     }
-    giris.id = kimlik;
-    giris.dataset.alan = ad;
-    if (deger) giris.value = deger;
-    giris.addEventListener("input", konularDegisti);
-    const satir = document.createElement("div");
-    satir.className = "etiket-satir";
-    satir.append(etiket, ...(ALAN_ACIKLAMALARI[ad] ? bilgiDugmesi(ad, etiketMetni) : []));
-    kart.append(satir, giris);
-    return giris;
+    input.id = id;
+    input.dataset.field = name;
+    if (value) input.value = value;
+    input.addEventListener("input", topicsChanged);
+    const row = document.createElement("div");
+    row.className = "label-row";
+    row.append(label, ...(FIELD_HELP[name] ? infoButton(name, labelText) : []));
+    card.append(row, input);
+    return input;
   }
 
-  function konuKarti(konu, acik) {
-    const kart = document.createElement("details");
-    kart.className = "konu";
-    kart.open = Boolean(acik);
-    const ozet = document.createElement("summary");
-    const ad = document.createElement("span");
-    const sil = document.createElement("button");
-    sil.type = "button";
-    sil.textContent = "Sil";
-    sil.addEventListener("click", (olay) => {
-      olay.preventDefault();
-      kart.remove();
-      konularDegisti();
+  function topicCard(topic, open) {
+    const card = document.createElement("details");
+    card.className = "topic";
+    card.open = Boolean(open);
+    const summary = document.createElement("summary");
+    const name = document.createElement("span");
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.textContent = "Sil";
+    remove.addEventListener("click", (event) => {
+      event.preventDefault();
+      card.remove();
+      topicsChanged();
     });
-    ozet.append(ad, sil);
-    const ic = document.createElement("div");
-    ic.className = "ic";
-    const baslik = alan(ic, "Konu", "baslik", "metin", konu.baslik);
-    alan(ic, "Görev türü", "tur", "secim", PG.gorevTuruEslestir(konu.tur) || GOREV_TURLERI[0]);
-    alan(ic, "Öğrenme birimi", "birim", "metin", konu.birim);
-    alan(ic, "Öğrenciden beklenen çalışma (ne hazırlayacak, ne teslim edecek?)", "urun", "metin", konu.urun);
-    alan(ic, "Cevaplanacak sorular (her satır bir soru)", "sorular", "metin-alani", (konu.sorular || []).join("\n"));
-    kart.append(ozet, ic);
-    $("konular").append(kart);
-    return baslik;
+    summary.append(name, remove);
+    const inner = document.createElement("div");
+    inner.className = "inner";
+    const title = field(inner, "Konu", "title", "text", topic.title);
+    field(inner, "Görev türü", "type", "select", PT.matchTaskType(topic.type) || TASK_TYPES[0]);
+    field(inner, "Öğrenme birimi", "unit", "text", topic.unit);
+    field(inner, "Öğrenciden beklenen çalışma (ne hazırlayacak, ne teslim edecek?)", "deliverable", "text", topic.deliverable);
+    field(inner, "Cevaplanacak sorular (her satır bir soru)", "questions", "textarea", (topic.questions || []).join("\n"));
+    card.append(summary, inner);
+    $("topics").append(card);
+    return title;
   }
 
-  function konuBasliklariniYaz() {
-    document.querySelectorAll("#konular .konu").forEach((kart, i) => {
-      const baslik = kart.querySelector("[data-alan=baslik]").value.trim();
-      kart.querySelector("summary span").textContent = `${i + 1}. ${baslik || "(başlıksız konu)"}`;
+  function renderTopicTitles() {
+    document.querySelectorAll("#topics .topic").forEach((card, i) => {
+      const title = card.querySelector("[data-field=title]").value.trim();
+      card.querySelector("summary span").textContent = `${i + 1}. ${title || "(başlıksız konu)"}`;
     });
   }
 
-  /** Konu sayısı değiştiyse yeniden dağıtır; yalnız metin değiştiyse dağılımı korur. */
-  function dagilimiGuncelle(zorla) {
-    const konuSayisi = PG.konulariDuzenle(formuOku().konular).length;
-    siniflar.forEach((sinif) => {
-      if (konuSayisi === 0) {
-        sinif.dagilim = null;
-      } else if (zorla || sinif.dagilimKonuSayisi !== konuSayisi
-                 || !PG.dagilimGecerli(sinif.dagilim, konuSayisi, sinif.ogrenciler.length)) {
-        sinif.dagilim = PG.konuDagit(konuSayisi, sinif.ogrenciler.length);
+  /** Redistributes if the topic count changed; keeps the distribution if only the text changed. */
+  function updateDistribution(force) {
+    const topicCount = PT.normalizeTopics(readForm().topics).length;
+    classes.forEach((cls) => {
+      if (topicCount === 0) {
+        cls.distribution = null;
+      } else if (force || cls.distributionTopicCount !== topicCount
+                 || !PT.isValidDistribution(cls.distribution, topicCount, cls.students.length)) {
+        cls.distribution = PT.distributeTopics(topicCount, cls.students.length);
       }
-      sinif.dagilimKonuSayisi = konuSayisi;
+      cls.distributionTopicCount = topicCount;
     });
-    $("dagit").disabled = konuSayisi === 0 || siniflar.length === 0;
-    const durum = $("dagitDurum");
-    if (konuSayisi === 0) {
-      durum.textContent = "";
-    } else if (siniflar.length === 0) {
-      durum.textContent = `${konuSayisi} konu girildi. Dağıtım için sınıf listesi ekleyin.`;
+    $("distribute").disabled = topicCount === 0 || classes.length === 0;
+    const status = $("distributeStatus");
+    if (topicCount === 0) {
+      status.textContent = "";
+    } else if (classes.length === 0) {
+      status.textContent = `${topicCount} konu girildi. Dağıtım için sınıf listesi ekleyin.`;
     } else {
-      durum.textContent = siniflar.map((sinif) => {
-        const n = sinif.ogrenciler.length;
-        if (konuSayisi >= n) {
-          return `${sinif.sube}: ${n} öğrenciye ${n} ayrı konu` + (konuSayisi > n ? ` (${konuSayisi - n} konu yedek)` : "");
+      status.textContent = classes.map((cls) => {
+        const n = cls.students.length;
+        if (topicCount >= n) {
+          return `${cls.section}: ${n} öğrenciye ${n} ayrı konu` + (topicCount > n ? ` (${topicCount - n} konu yedek)` : "");
         }
-        const az = Math.floor(n / konuSayisi);
-        const cok = Math.ceil(n / konuSayisi);
-        return `${sinif.sube}: ${konuSayisi} konu, her biri ${az === cok ? az : az + "-" + cok} öğrenciye`;
+        const fewest = Math.floor(n / topicCount);
+        const most = Math.ceil(n / topicCount);
+        return `${cls.section}: ${topicCount} konu, her biri ${fewest === most ? fewest : fewest + "-" + most} öğrenciye`;
       }).join(" · ");
     }
-    subeleriCiz();
+    renderClasses();
   }
 
-  function konularDegisti() {
-    konuBasliklariniYaz();
-    dagilimiGuncelle(false);
-    kaydet();
+  function topicsChanged() {
+    renderTopicTitles();
+    updateDistribution(false);
+    save();
   }
 
-  /** Yapıştırılan listeyi konulara çevirir: her satır bir konu, sekmeyle ayrılmış sütunlar isteğe bağlı. */
-  function topluEkle() {
-    const satirlar = $("topluMetin").value.split("\n").map((s) => s.trim()).filter(Boolean);
-    satirlar.forEach((satir) => {
-      const parcalar = satir.split("\t").map((p) => p.trim());
-      konuKarti(Object.fromEntries(TOPLU_SUTUNLAR.map((ad, i) => [ad, parcalar[i] || ""])), false);
+  /** Turns the pasted list into topics: one topic per line, tab-separated columns are optional. */
+  function bulkAdd() {
+    const lines = $("bulkText").value.split("\n").map((s) => s.trim()).filter(Boolean);
+    lines.forEach((line) => {
+      const parts = line.split("\t").map((p) => p.trim());
+      topicCard(Object.fromEntries(BULK_COLUMNS.map((name, i) => [name, parts[i] || ""])), false);
     });
-    if (satirlar.length) $("topluMetin").value = "";
-    konularDegisti();
+    if (lines.length) $("bulkText").value = "";
+    topicsChanged();
   }
 
-  function maddeSatiri(madde) {
-    const satir = document.createElement("div");
-    satir.className = "madde";
-    const metin = document.createElement("input");
-    metin.type = "text";
-    metin.value = madde.metin || "";
-    metin.placeholder = "Gözlenecek özellik";
-    metin.setAttribute("aria-label", "Gözlenecek özellik");
-    const puan = document.createElement("input");
-    puan.type = "number";
-    puan.min = "0";
-    puan.max = String(PG.EN_COK_PUAN);
-    puan.step = "1";
-    puan.inputMode = "numeric";
-    puan.value = madde.puan === undefined ? "" : madde.puan;
-    puan.setAttribute("aria-label", "Puan");
-    const sil = document.createElement("button");
-    sil.type = "button";
-    sil.textContent = "Sil";
-    sil.addEventListener("click", () => {
-      satir.remove();
-      if (!document.querySelector("#tutum .madde")) maddeSatiri({ metin: "", puan: "" });
-      tutumDegisti();
+  function itemRow(item) {
+    const row = document.createElement("div");
+    row.className = "item";
+    const text = document.createElement("input");
+    text.type = "text";
+    text.value = item.text || "";
+    text.placeholder = "Gözlenecek özellik";
+    text.setAttribute("aria-label", "Gözlenecek özellik");
+    const points = document.createElement("input");
+    points.type = "number";
+    points.min = "0";
+    points.max = String(PT.MAX_POINTS);
+    points.step = "1";
+    points.inputMode = "numeric";
+    points.value = item.points === undefined ? "" : item.points;
+    points.setAttribute("aria-label", "Puan");
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.textContent = "Sil";
+    remove.addEventListener("click", () => {
+      row.remove();
+      if (!document.querySelector("#attitude .item")) itemRow({ text: "", points: "" });
+      attitudeChanged();
     });
-    [metin, puan].forEach((giris) => giris.addEventListener("input", tutumDegisti));
-    satir.append(metin, puan, sil);
-    $("tutum").append(satir);
-    return metin;
+    [text, points].forEach((input) => input.addEventListener("input", attitudeChanged));
+    row.append(text, points, remove);
+    $("attitude").append(row);
+    return text;
   }
 
-  /** Toplamı gösterir; 100'ü geçerse belge oluşturmayı kapatır. */
-  function tutumDegisti() {
-    const toplam = PG.tutumToplam(formuOku().tutum);
-    const asim = toplam > PG.EN_COK_PUAN;
-    const kutu = $("tutumToplam");
-    kutu.className = asim ? "asim" : "";
-    kutu.textContent = asim
-      ? `Toplam: ${toplam} puan. ${PG.EN_COK_PUAN} puanı geçemez; ${toplam - PG.EN_COK_PUAN} puan azaltın.`
-      : `Toplam: ${toplam} / ${PG.EN_COK_PUAN} puan` + (toplam < PG.EN_COK_PUAN ? ` (${PG.EN_COK_PUAN - toplam} puan boşta)` : "");
-    dugmeyiGuncelle();
-    kaydet();
+  /** Shows the total; disables document generation when it exceeds 100. */
+  function attitudeChanged() {
+    const total = PT.attitudeTotal(readForm().attitude);
+    const isOverLimit = total > PT.MAX_POINTS;
+    const box = $("attitudeTotal");
+    box.className = isOverLimit ? "over-limit" : "";
+    box.textContent = isOverLimit
+      ? `Toplam: ${total} puan. ${PT.MAX_POINTS} puanı geçemez; ${total - PT.MAX_POINTS} puan azaltın.`
+      : `Toplam: ${total} / ${PT.MAX_POINTS} puan` + (total < PT.MAX_POINTS ? ` (${PT.MAX_POINTS - total} puan boşta)` : "");
+    updateGenerateButton();
+    save();
   }
 
-  function dugmeyiGuncelle() {
-    const asim = PG.tutumToplam(formuOku().tutum) > PG.EN_COK_PUAN;
-    $("olustur").disabled = siniflar.length === 0 || asim;
+  function updateGenerateButton() {
+    const isOverLimit = PT.attitudeTotal(readForm().attitude) > PT.MAX_POINTS;
+    $("generate").disabled = classes.length === 0 || isOverLimit;
   }
 
-  function tutumuDoldur(maddeler) {
-    $("tutum").replaceChildren();
-    maddeler.forEach(maddeSatiri);
+  function fillAttitude(items) {
+    $("attitude").replaceChildren();
+    items.forEach(itemRow);
   }
 
-  function formuYukle() {
-    const k = kayitliBilgi();
-    METIN_ALANLARI.forEach((id) => { if (k[id]) $(id).value = k[id]; });
-    if (!$("egitimYili").value) $("egitimYili").value = "2026-2027";
-    (k.ogretmenler && k.ogretmenler.length ? k.ogretmenler : [""]).forEach(ogretmenSatiri);
-    if (k.dersTuru === "sinif") document.querySelector("input[name=dersTuru][value=sinif]").checked = true;
-    tutumuDoldur(k.tutum && k.tutum.length ? k.tutum : PG.tutumVarsayilan(dersTuru()));
-    (k.konular || []).filter((konu) => konu.baslik && konu.baslik.trim()).forEach((konu) => konuKarti(konu, false));
-    konuBasliklariniYaz();
-    tutumDegisti();
-    dagilimiGuncelle(false);
+  function loadForm() {
+    const s = savedForm();
+    TEXT_FIELDS.forEach((id) => { if (s[id]) $(id).value = s[id]; });
+    if (!$("academicYear").value) $("academicYear").value = "2026-2027";
+    (s.teachers && s.teachers.length ? s.teachers : [""]).forEach(teacherRow);
+    if (s.courseType === "classroom") document.querySelector("input[name=courseType][value=classroom]").checked = true;
+    fillAttitude(s.attitude && s.attitude.length ? s.attitude : PT.defaultAttitude(courseType()));
+    (s.topics || []).filter((topic) => topic.title && topic.title.trim()).forEach((topic) => topicCard(topic, false));
+    renderTopicTitles();
+    attitudeChanged();
+    updateDistribution(false);
   }
 
-  // ── Sınıf listesi ──
-  function subeleriCiz() {
-    const kap = $("subeler");
-    const acikSubeler = new Set([...kap.querySelectorAll("details[open]")].map((d) => d.dataset.sube));
-    const konular = PG.konulariDuzenle(formuOku().konular);
-    kap.replaceChildren();
-    siniflar.forEach((sinif, sira) => {
-      const ayrinti = document.createElement("details");
-      ayrinti.className = "sube";
-      ayrinti.dataset.sube = sinif.sube;
-      ayrinti.open = acikSubeler.has(sinif.sube);
-      const dagilimVar = PG.dagilimGecerli(sinif.dagilim, konular.length, sinif.ogrenciler.length);
-      const ozet = document.createElement("summary");
-      const ad = document.createElement("span");
-      ad.textContent = `${sinif.sube} — ${sinif.ogrenciler.length} öğrenci (${sinif.dosya})`;
-      const kaldir = document.createElement("button");
-      kaldir.type = "button";
-      kaldir.textContent = "Kaldır";
-      kaldir.addEventListener("click", (olay) => {
-        olay.preventDefault();
-        siniflar = siniflar.filter((_, i) => i !== sira);
-        dagilimiGuncelle(false);
+  // ── Class list ──
+  function renderClasses() {
+    const container = $("classSections");
+    const openSections = new Set([...container.querySelectorAll("details[open]")].map((d) => d.dataset.section));
+    const topics = PT.normalizeTopics(readForm().topics);
+    container.replaceChildren();
+    classes.forEach((cls, index) => {
+      const details = document.createElement("details");
+      details.className = "class-section";
+      details.dataset.section = cls.section;
+      details.open = openSections.has(cls.section);
+      const hasDistribution = PT.isValidDistribution(cls.distribution, topics.length, cls.students.length);
+      const summary = document.createElement("summary");
+      const name = document.createElement("span");
+      name.textContent = `${cls.section} — ${cls.students.length} öğrenci (${cls.file})`;
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.textContent = "Kaldır";
+      remove.addEventListener("click", (event) => {
+        event.preventDefault();
+        classes = classes.filter((_, i) => i !== index);
+        updateDistribution(false);
       });
-      ozet.append(ad, kaldir);
-      const kaydir = document.createElement("div");
-      kaydir.className = "kaydir";
-      const tablo = document.createElement("table");
-      const baslik = tablo.insertRow();
-      ["S.No", "Öğr. No", "Adı Soyadı"].concat(dagilimVar ? ["Konu"] : []).forEach((b) => {
+      summary.append(name, remove);
+      const scroll = document.createElement("div");
+      scroll.className = "scroll";
+      const table = document.createElement("table");
+      const header = table.insertRow();
+      ["S.No", "Öğr. No", "Adı Soyadı"].concat(hasDistribution ? ["Konu"] : []).forEach((h) => {
         const th = document.createElement("th");
-        th.textContent = b;
-        baslik.append(th);
+        th.textContent = h;
+        header.append(th);
       });
-      sinif.ogrenciler.forEach((o, i) => {
-        const satir = tablo.insertRow();
-        const konu = dagilimVar ? [`${sinif.dagilim[i] + 1}. ${konular[sinif.dagilim[i]].baslik}`] : [];
-        [i + 1, o.no, `${o.ad} ${o.soyad}`].concat(konu).forEach((d) => { satir.insertCell().textContent = d; });
+      cls.students.forEach((s, i) => {
+        const row = table.insertRow();
+        const topic = hasDistribution ? [`${cls.distribution[i] + 1}. ${topics[cls.distribution[i]].title}`] : [];
+        [i + 1, s.number, `${s.firstName} ${s.lastName}`].concat(topic).forEach((d) => { row.insertCell().textContent = d; });
       });
-      kaydir.append(tablo);
-      ayrinti.append(ozet, kaydir);
-      kap.append(ayrinti);
+      scroll.append(table);
+      details.append(summary, scroll);
+      container.append(details);
     });
-    dugmeyiGuncelle();
+    updateGenerateButton();
   }
 
-  async function dosyalariEkle(dosyalar) {
-    const hatalar = [];
-    for (const dosya of dosyalar) {
+  async function addFiles(files) {
+    const errors = [];
+    for (const file of files) {
       try {
-        const veri = new Uint8Array(await dosya.arrayBuffer());
-        const sinif = PG.sinifListesiOku(window.XLSX, veri, dosya.name);
-        siniflar = siniflar.filter((s) => s.sube !== sinif.sube).concat([sinif]);
-      } catch (hata) {
-        hatalar.push(hata.message);
+        const data = new Uint8Array(await file.arrayBuffer());
+        const cls = PT.readClassList(window.XLSX, data, file.name);
+        classes = classes.filter((c) => c.section !== cls.section).concat([cls]);
+      } catch (error) {
+        errors.push(error.message);
       }
     }
-    siniflar.sort((a, b) => a.sube.localeCompare(b.sube, "tr", { numeric: true }));
-    const kutu = $("dosyaHata");
-    kutu.hidden = hatalar.length === 0;
-    kutu.textContent = hatalar.join(" ");
-    dagilimiGuncelle(false);
+    classes.sort((a, b) => a.section.localeCompare(b.section, "tr", { numeric: true }));
+    const box = $("fileError");
+    box.hidden = errors.length === 0;
+    box.textContent = errors.join(" ");
+    updateDistribution(false);
   }
 
-  // ── Word üretimi ──
-  async function olustur() {
-    const sonuc = $("sonuc");
-    sonuc.className = "";
-    sonuc.textContent = "";
-    const dugme = $("olustur");
-    dugme.disabled = true;
+  // ── Word generation ──
+  async function generate() {
+    const result = $("result");
+    result.className = "";
+    result.textContent = "";
+    const button = $("generate");
+    button.disabled = true;
     try {
-      const bilgi = formuOku();
-      const belge = PG.belgeOlustur(window.docx, bilgi, siniflar);
-      const blob = await window.docx.Packer.toBlob(belge);
-      const baglanti = document.createElement("a");
-      baglanti.href = URL.createObjectURL(blob);
-      baglanti.download = PG.dosyaAdi(bilgi, siniflar);
-      document.body.append(baglanti);
-      baglanti.click();
-      baglanti.remove();
-      setTimeout(() => URL.revokeObjectURL(baglanti.href), 10000);
-      sonuc.className = "tamam";
-      sonuc.textContent = `Belge indirildi: ${baglanti.download}`;
-    } catch (hata) {
-      console.error(hata);
-      sonuc.className = "hata";
-      sonuc.textContent = "Belge oluşturulamadı: " + hata.message;
+      const form = readForm();
+      const doc = PT.buildDocument(window.docx, form, classes);
+      const blob = await window.docx.Packer.toBlob(doc);
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = PT.documentFileName(form, classes);
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(link.href), 10000);
+      result.className = "success";
+      result.textContent = `Belge indirildi: ${link.download}`;
+    } catch (error) {
+      console.error(error);
+      result.className = "error";
+      result.textContent = "Belge oluşturulamadı: " + error.message;
     } finally {
-      dugmeyiGuncelle();
+      updateGenerateButton();
     }
   }
 
-  // ── Olaylar ──
-  const birak = $("birak");
-  birak.addEventListener("click", () => $("dosya").click());
-  birak.addEventListener("keydown", (olay) => {
-    if (olay.key === "Enter" || olay.key === " ") { olay.preventDefault(); $("dosya").click(); }
+  // ── Events ──
+  const dropZone = $("dropZone");
+  dropZone.addEventListener("click", () => $("fileInput").click());
+  dropZone.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); $("fileInput").click(); }
   });
-  ["dragenter", "dragover"].forEach((ad) => birak.addEventListener(ad, (olay) => { olay.preventDefault(); birak.classList.add("uzerinde"); }));
-  ["dragleave", "drop"].forEach((ad) => birak.addEventListener(ad, (olay) => { olay.preventDefault(); birak.classList.remove("uzerinde"); }));
-  birak.addEventListener("drop", (olay) => dosyalariEkle([...olay.dataTransfer.files]));
-  $("dosya").addEventListener("change", (olay) => { dosyalariEkle([...olay.target.files]); olay.target.value = ""; });
-  $("ogretmenEkle").addEventListener("click", () => ogretmenSatiri("").focus());
-  METIN_ALANLARI.forEach((id) => $(id).addEventListener("input", kaydet));
-  $("konuEkle").addEventListener("click", () => { konuKarti({}, true).focus(); konularDegisti(); });
-  $("topluEkle").addEventListener("click", topluEkle);
-  $("dagit").addEventListener("click", () => dagilimiGuncelle(true));
-  $("maddeEkle").addEventListener("click", () => { maddeSatiri({ metin: "", puan: "" }).focus(); tutumDegisti(); });
-  document.querySelectorAll("input[name=dersTuru]").forEach((r) => r.addEventListener("change", () => {
-    tutumuDoldur(PG.tutumVarsayilan(dersTuru()));
-    tutumDegisti();
+  ["dragenter", "dragover"].forEach((type) => dropZone.addEventListener(type, (event) => { event.preventDefault(); dropZone.classList.add("drag-over"); }));
+  ["dragleave", "drop"].forEach((type) => dropZone.addEventListener(type, (event) => { event.preventDefault(); dropZone.classList.remove("drag-over"); }));
+  dropZone.addEventListener("drop", (event) => addFiles([...event.dataTransfer.files]));
+  $("fileInput").addEventListener("change", (event) => { addFiles([...event.target.files]); event.target.value = ""; });
+  $("addTeacher").addEventListener("click", () => teacherRow("").focus());
+  TEXT_FIELDS.forEach((id) => $(id).addEventListener("input", save));
+  $("addTopic").addEventListener("click", () => { topicCard({}, true).focus(); topicsChanged(); });
+  $("bulkAdd").addEventListener("click", bulkAdd);
+  $("distribute").addEventListener("click", () => updateDistribution(true));
+  $("addItem").addEventListener("click", () => { itemRow({ text: "", points: "" }).focus(); attitudeChanged(); });
+  document.querySelectorAll("input[name=courseType]").forEach((r) => r.addEventListener("change", () => {
+    fillAttitude(PT.defaultAttitude(courseType()));
+    attitudeChanged();
   }));
-  $("olustur").addEventListener("click", olustur);
-  $("baglantiKopyala").addEventListener("click", async () => {
-    const adres = new URL("ornek-rapor.pdf", location.href).href;
+  $("generate").addEventListener("click", generate);
+  $("copyLink").addEventListener("click", async () => {
+    const url = new URL("ornek-rapor.pdf", location.href).href;
     try {
-      await navigator.clipboard.writeText(adres);
-      $("kopyaDurum").textContent = "Bağlantı kopyalandı: " + adres;
-    } catch (hata) {
-      $("kopyaDurum").textContent = "Kopyalanamadı; bağlantıyı elle kopyalayın: " + adres;
+      await navigator.clipboard.writeText(url);
+      $("copyStatus").textContent = "Bağlantı kopyalandı: " + url;
+    } catch (error) {
+      $("copyStatus").textContent = "Kopyalanamadı; bağlantıyı elle kopyalayın: " + url;
     }
   });
-  $("formuTemizle").addEventListener("click", () => {
-    try { localStorage.removeItem(KAYIT_ANAHTARI); } catch (hata) { /* saklama zaten kapalı */ }
+  /** Wipes everything, including class lists, saved form data and topics; the page returns to its initial state. */
+  function clearForm() {
+    if (!confirm("Formdaki tüm bilgiler, eklenen sınıf listeleri ve konular silinecek. Devam edilsin mi?")) return;
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
+    } catch (error) { /* storage is already disabled */ }
     location.reload();
-  });
+  }
+  $("clearSavedData").addEventListener("click", clearForm);
+  $("clearForm").addEventListener("click", clearForm);
 
-  formuYukle();
+  loadForm();
 })();
 </script>
 </body>
