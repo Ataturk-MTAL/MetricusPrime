@@ -40,6 +40,7 @@
   #birak.uzerinde { border-color: var(--vurgu); background: var(--zemin); }
   button { font: inherit; border-radius: 8px; border: 1px solid var(--cizgi); background: var(--kart); color: var(--yazi); padding: 8px 14px; cursor: pointer; }
   button.ana { background: var(--vurgu); color: var(--vurgu-yazi); border-color: var(--vurgu); font-weight: 700; padding: 12px 20px; font-size: 1.05rem; width: 100%; }
+  button.clear-form { width: 100%; margin-top: 8px; color: var(--hata); border-color: var(--hata); }
   button:disabled { opacity: .5; cursor: not-allowed; }
   .ogretmen, .madde { display: flex; gap: 8px; margin-bottom: 8px; }
   .ogretmen button, .madde button { flex: none; }
@@ -177,6 +178,7 @@
   </section>
 
   <button type="button" class="ana" id="olustur" disabled>Word belgesini oluştur</button>
+  <button type="button" class="clear-form" id="clearForm">Formu temizle</button>
   <div id="sonuc" role="status"></div>
   <p class="ipucu">Görevin amacı ve güvenlik kuralları Word belgesinde boş gelir; onları Word'de yazarsınız.
     Dereceli puanlama anahtarı dolu gelir. Belgedeki her şeyi sonradan Word'de düzeltebilirsiniz.</p>
@@ -231,7 +233,7 @@
       <dt>Kaynak kod</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime" rel="noopener">github.com/Ataturk-MTAL/MetricusPrime</a></dd>
       <dt>Sorun bildirme</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime/issues" rel="noopener">GitHub üzerinden</a></dd>
       <dt>Kullanılan kütüphaneler</dt><dd>SheetJS (Apache-2.0), docx (MIT)</dd>
-      <dt>Sürüm</dt><dd>1.11 · Ekim 2026</dd>
+      <dt>Sürüm</dt><dd>1.12 · Ekim 2026</dd>
     </dl>
   </section>
 
@@ -662,10 +664,14 @@
       $("kopyaDurum").textContent = "Kopyalanamadı; bağlantıyı elle kopyalayın: " + adres;
     }
   });
-  $("formuTemizle").addEventListener("click", () => {
+  /** Wipes everything, including class lists, saved form data and topics; the page returns to its initial state. */
+  function clearForm() {
+    if (!confirm("Formdaki tüm bilgiler, eklenen sınıf listeleri ve konular silinecek. Devam edilsin mi?")) return;
     try { localStorage.removeItem(KAYIT_ANAHTARI); } catch (hata) { /* saklama zaten kapalı */ }
     location.reload();
-  });
+  }
+  $("formuTemizle").addEventListener("click", clearForm);
+  $("clearForm").addEventListener("click", clearForm);
 
   formuYukle();
 })();
