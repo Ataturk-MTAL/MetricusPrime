@@ -1,32 +1,32 @@
-// Performans görevi belgesi: e-Okul sınıf listesini okur, Word (.docx) belgesini üretir.
-// Tarayıcıda window.PerformansGorevi, Node'da module.exports olarak kullanılır.
-// Kütüphaneler dışarıdan verilir: XLSX (SheetJS) ve docx (docx.js).
-(function (kok, fabrika) {
+// Performance task document: reads the e-Okul class list and produces the Word (.docx) document.
+// Used as window.PerformanceTask in the browser and as module.exports in Node.
+// Libraries are passed in from outside: XLSX (SheetJS) and docx (docx.js).
+(function (root, factory) {
   if (typeof module === "object" && module.exports) {
-    module.exports = fabrika();
+    module.exports = factory();
   } else {
-    kok.PerformansGorevi = fabrika();
+    root.PerformanceTask = factory();
   }
 })(typeof self !== "undefined" ? self : this, function () {
   "use strict";
 
-  const SINIF_DESENI = /(\d+)\.\s*Sınıf\s*\/\s*(\S+)\s*Şubesi/i;
-  const GEREKLI_SUTUNLAR = ["Öğrenci No", "Adı", "Soyadı"];
-  const SADECE_VERI_NOTU = " e-Okul'da raporu \"Excel (Sadece Veri)\" biçiminde dışa aktarıp yeniden deneyin.";
-  const CM = 567; // 1 cm = 567 twip
-  const DIKEY_KENAR_CM = 1.8;
-  const YATAY_KENAR_CM = 1.4;
-  const UST_ALT_KENAR_CM = 1.5;
-  const DIKEY_GENISLIK_CM = 21 - 2 * DIKEY_KENAR_CM;
-  const YATAY_GENISLIK_CM = 29.7 - 2 * YATAY_KENAR_CM;
-  const ETIKET_RENGI = "F2F2F2";
-  const YAZI_TIPI = "Times New Roman";
-  const EN_AZ_KONU_SATIRI = 10;
-  const TUTUM_PUANI = 20; // hazır maddelerin puanı
-  const EN_COK_PUAN = 100;
+  const CLASS_PATTERN = /(\d+)\.\s*Sınıf\s*\/\s*(\S+)\s*Şubesi/i;
+  const REQUIRED_COLUMNS = ["Öğrenci No", "Adı", "Soyadı"];
+  const DATA_ONLY_HINT = " e-Okul'da raporu \"Excel (Sadece Veri)\" biçiminde dışa aktarıp yeniden deneyin.";
+  const TWIPS_PER_CM = 567; // 1 cm = 567 twip
+  const PORTRAIT_MARGIN_CM = 1.8;
+  const LANDSCAPE_MARGIN_CM = 1.4;
+  const TOP_BOTTOM_MARGIN_CM = 1.5;
+  const PORTRAIT_WIDTH_CM = 21 - 2 * PORTRAIT_MARGIN_CM;
+  const LANDSCAPE_WIDTH_CM = 29.7 - 2 * LANDSCAPE_MARGIN_CM;
+  const LABEL_FILL = "F2F2F2";
+  const FONT = "Times New Roman";
+  const MIN_TOPIC_ROWS = 10;
+  const DEFAULT_ATTITUDE_POINTS = 20; // points of each built-in item
+  const MAX_POINTS = 100;
 
-  // (kısa ad, zümre ölçüt metni, puan, [çok iyi, iyi, orta, geliştirilmeli])
-  const OLCUTLER = [
+  // (short name, department criterion text, points, [very good, good, fair, needs improvement])
+  const CRITERIA = [
     ["Planlama", "Ödevin nasıl yapılacağını planlamıştır", 10, [
       "Çalışma takvimi ve iş adımlarını yazılı hazırlamış, zamanında teslim etmiştir.",
       "Planı hazırlamış, bazı adımlar eksik ya da geç kalmıştır.",
@@ -68,23 +68,23 @@
       "Çalışma / sunum eksiktir; soruların bir kısmı cevapsızdır.",
       "Çalışma konunun amacını karşılamamaktadır."]],
   ];
-  const ARALIK = {
+  const SCORE_RANGES = {
     5: ["5", "4-3", "2", "1-0"],
     10: ["10-9", "8-6", "5-3", "2-0"],
     15: ["15-13", "12-9", "8-5", "4-0"],
     20: ["20-17", "16-12", "11-7", "6-0"],
   };
-  const SEVIYELER = ["Çok İyi", "İyi", "Orta", "Geliştirilmeli"];
+  const LEVELS = ["Çok İyi", "İyi", "Orta", "Geliştirilmeli"];
 
-  const TUTUM_VARSAYILAN = {
-    atolye: [
+  const DEFAULT_ATTITUDE_ITEMS = {
+    workshop: [
       "Atölye içi tutum ve davranışları; arkadaşlarına ve öğretmenine saygılıdır",
       "Derse etkin katılır, soru sorar, verilen uygulamaları zamanında tamamlar",
       "Ders araç-gereçlerini (defter, kalem, avadanlık) düzenli getirir",
       "İş önlüğü giyer; iş sağlığı ve güvenliği kurallarına uyar, enerji altında çalışmaz",
       "Çalışma masasını, araç-gereci ve atölyeyi düzenli ve temiz bırakır",
     ],
-    sinif: [
+    classroom: [
       "Sınıf içi tutum ve davranışları; arkadaşlarına ve öğretmenine saygılıdır",
       "Derse etkin katılır, soru sorar, verilen çalışmaları zamanında tamamlar",
       "Ders araç-gereçlerini (defter, kalem, ders kitabı) düzenli getirir",
@@ -93,7 +93,7 @@
     ],
   };
 
-  const RAPOR_BOLUMLERI = [
+  const REPORT_SECTIONS = [
     "Kapak (okul, ders, konu, öğrencinin adı-soyadı, sınıfı, numarası, teslim tarihi)",
     "Amaç",
     "Teorik bilgi (kendi cümleleriyle)",
@@ -105,25 +105,25 @@
     "Kaynakça (yazar/site adı, başlık, bağlantı, erişim tarihi)",
   ];
 
-  const GOREV_TURLERI = [
+  const TASK_TYPES = [
     ["Uygulama + Rapor", "[Uygulamanın nerede ve nasıl yapılacağını, neyin teslim edileceğini yazınız.]"],
     ["Araştırma + Rapor", "Konu kaynaklardan araştırılır; karşılaştırma tabloları ve güncel örneklerle rapor hazırlanır."],
     ["Araştırma + Sunum", "Rapora ek olarak 5-7 dakikalık sunum (8-12 slayt) hazırlanır ve sınıfta sunulur."],
     ["Rapor", "Konu kaynaklardan incelenir ve yalnız yazılı rapor hazırlanır; uygulama ya da sunum gerekmez."],
   ];
-  const GOREV_TURU_ADLARI = GOREV_TURLERI.map(([ad]) => ad);
-  const VARSAYILAN_GOREV_TURU = GOREV_TURU_ADLARI[0];
+  const TASK_TYPE_NAMES = TASK_TYPES.map(([name]) => name);
+  const DEFAULT_TASK_TYPE = TASK_TYPE_NAMES[0];
 
-  /** Yazılan görev türünü sabit listedeki karşılığına eşler (büyük/küçük harf ve boşluk farkı önemsiz); bulamazsa null. */
-  function gorevTuruEslestir(deger) {
-    const sade = (metin) => String(metin || "").toLocaleLowerCase("tr").replace(/\s+/g, "").replace(/ve/g, "+");
-    const aranan = sade(deger);
-    if (!aranan) return null;
-    return GOREV_TURU_ADLARI.find((ad) => sade(ad) === aranan)
-      || (["sadecerapor", "yalnızrapor", "rapor"].includes(aranan) ? "Rapor" : null);
+  /** Maps a typed task type to its entry in the fixed list (case and whitespace are ignored); null if not found. */
+  function matchTaskType(value) {
+    const simplify = (text) => String(text || "").toLocaleLowerCase("tr").replace(/\s+/g, "").replace(/ve/g, "+");
+    const wanted = simplify(value);
+    if (!wanted) return null;
+    return TASK_TYPE_NAMES.find((name) => simplify(name) === wanted)
+      || (["sadecerapor", "yalnızrapor", "rapor"].includes(wanted) ? "Rapor" : null);
   }
 
-  const KURALLAR = [
+  const RULES = [
     "Rapor yalnız el yazısıyla hazırlanır; bilgisayar çıktısı rapor kabul edilmez. A4 kâğıt, en az 6 sayfa. Fotoğraf ve benzeri görseller çıktı alınıp yapıştırılabilir; görseller numaralanır ve açıklanır.",
     "Başka bir kaynaktan veya arkadaşından kopyalanan çalışmalar değerlendirmeye alınmaz. Yapay zekâ araçlarından yararlanılabilir; ancak öğrenci raporunu kendi cümleleriyle yazar ve kullandığı aracı kaynakçada belirtir.",
     "Her konu için cevaplanacak sorular verilmiştir. Soruların tamamı cevaplanmadan görev teslim edilmiş sayılmaz.",
@@ -131,433 +131,433 @@
     "Güvenlik: [Derse özgü iş sağlığı ve güvenliği kurallarını yazınız.]",
   ];
 
-  // ── e-Okul sınıf listesi ──────────────────────────────────
-  function hucre(deger) {
-    return String(deger === undefined || deger === null ? "" : deger).trim();
+  // ── e-Okul class list ─────────────────────────────────────
+  function cellText(value) {
+    return String(value === undefined || value === null ? "" : value).trim();
   }
 
-  /** e-Okul "Sınıf Listesi" (OOG01001R020*.XLS) dosyasını okur. Hata durumunda Türkçe mesajla Error fırlatır. */
-  function sinifListesiOku(XLSX, veri, dosyaAdi) {
-    let kitap;
+  /** Reads an e-Okul "Sınıf Listesi" (OOG01001R020*.XLS) file. On failure throws an Error with a Turkish message. */
+  function readClassList(XLSX, data, fileName) {
+    let workbook;
     try {
-      kitap = XLSX.read(veri, { type: "array" });
-    } catch (hata) {
-      throw new Error(dosyaAdi + ": dosya açılamadı. e-Okul'dan indirilen Excel (XLS) dosyasını seçtiğinizden emin olun.");
+      workbook = XLSX.read(data, { type: "array" });
+    } catch (error) {
+      throw new Error(fileName + ": dosya açılamadı. e-Okul'dan indirilen Excel (XLS) dosyasını seçtiğinizden emin olun.");
     }
-    const sayfa = kitap.Sheets[kitap.SheetNames[0]];
-    const satirlar = XLSX.utils.sheet_to_json(sayfa, { header: 1, defval: "", raw: true });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "", raw: true });
 
-    const baslik = satirlar.slice(0, 6).map((s) => s.map(hucre).join(" ")).join(" ");
-    const eslesme = SINIF_DESENI.exec(baslik);
-    if (!eslesme) {
-      throw new Error(dosyaAdi + ": sınıf/şube bilgisi bulunamadı. Bu dosya e-Okul \"Sınıf Listesi\" raporu olmayabilir." + SADECE_VERI_NOTU);
+    const heading = rows.slice(0, 6).map((s) => s.map(cellText).join(" ")).join(" ");
+    const match = CLASS_PATTERN.exec(heading);
+    if (!match) {
+      throw new Error(fileName + ": sınıf/şube bilgisi bulunamadı. Bu dosya e-Okul \"Sınıf Listesi\" raporu olmayabilir." + DATA_ONLY_HINT);
     }
 
-    let baslikSatiri = -1;
-    let sutun = null;
-    for (let r = 0; r < satirlar.length; r++) {
-      const degerler = satirlar[r].map(hucre);
-      if (GEREKLI_SUTUNLAR.every((ad) => degerler.includes(ad))) {
-        baslikSatiri = r;
-        sutun = Object.fromEntries(GEREKLI_SUTUNLAR.map((ad) => [ad, degerler.indexOf(ad)]));
+    let headerRow = -1;
+    let column = null;
+    for (let r = 0; r < rows.length; r++) {
+      const values = rows[r].map(cellText);
+      if (REQUIRED_COLUMNS.every((name) => values.includes(name))) {
+        headerRow = r;
+        column = Object.fromEntries(REQUIRED_COLUMNS.map((name) => [name, values.indexOf(name)]));
         break;
       }
     }
-    if (baslikSatiri < 0) {
-      throw new Error(dosyaAdi + ": \"Öğrenci No\", \"Adı\", \"Soyadı\" sütunları bulunamadı." + SADECE_VERI_NOTU);
+    if (headerRow < 0) {
+      throw new Error(fileName + ": \"Öğrenci No\", \"Adı\", \"Soyadı\" sütunları bulunamadı." + DATA_ONLY_HINT);
     }
 
-    const ogrenciler = [];
-    for (let r = baslikSatiri + 1; r < satirlar.length; r++) {
-      const no = hucre(satirlar[r][sutun["Öğrenci No"]]).replace(/\.0$/, "");
-      if (!/^\d+$/.test(no)) continue;
-      ogrenciler.push({
-        no: Number(no),
-        ad: hucre(satirlar[r][sutun["Adı"]]),
-        soyad: hucre(satirlar[r][sutun["Soyadı"]]),
+    const students = [];
+    for (let r = headerRow + 1; r < rows.length; r++) {
+      const number = cellText(rows[r][column["Öğrenci No"]]).replace(/\.0$/, "");
+      if (!/^\d+$/.test(number)) continue;
+      students.push({
+        number: Number(number),
+        firstName: cellText(rows[r][column["Adı"]]),
+        lastName: cellText(rows[r][column["Soyadı"]]),
       });
     }
-    if (ogrenciler.length === 0) {
-      throw new Error(dosyaAdi + ": öğrenci satırı bulunamadı." + SADECE_VERI_NOTU);
+    if (students.length === 0) {
+      throw new Error(fileName + ": öğrenci satırı bulunamadı." + DATA_ONLY_HINT);
     }
-    ogrenciler.sort((a, b) => a.no - b.no);
-    return { sinif: eslesme[1], sube: eslesme[1] + "/" + eslesme[2], dosya: dosyaAdi, ogrenciler };
+    students.sort((a, b) => a.number - b.number);
+    return { grade: match[1], section: match[1] + "/" + match[2], file: fileName, students };
   }
 
-  // ── Word yardımcıları ─────────────────────────────────────
-  function yardimcilar(docx) {
+  // ── Word helpers ──────────────────────────────────────────
+  function helpers(docx) {
     const { Paragraph, TextRun, Table, TableRow, TableCell, WidthType, AlignmentType, ShadingType,
       BorderStyle, VerticalAlign } = docx;
-    const cm = (deger) => Math.round(deger * CM);
-    const KENARSIZ = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
-    const KENARSIZ_HUCRE = { top: KENARSIZ, bottom: KENARSIZ, left: KENARSIZ, right: KENARSIZ };
+    const cm = (value) => Math.round(value * TWIPS_PER_CM);
+    const NO_BORDER = { style: BorderStyle.NONE, size: 0, color: "FFFFFF" };
+    const NO_CELL_BORDERS = { top: NO_BORDER, bottom: NO_BORDER, left: NO_BORDER, right: NO_BORDER };
 
-    /** "**kalın**" ve "\n" işaretlerini TextRun dizisine çevirir. */
-    function kosular(metin, boyut, kalin) {
-      const sonuc = [];
-      String(metin).split("**").forEach((parca, i) => {
-        parca.split("\n").forEach((satir, j) => {
-          if (satir === "" && j === 0) return;
-          sonuc.push(new TextRun({ text: satir, bold: kalin || i % 2 === 1, size: boyut * 2, font: YAZI_TIPI, break: j > 0 ? 1 : 0 }));
+    /** Converts "**bold**" and "\n" markers into an array of TextRuns. */
+    function runs(text, size, bold) {
+      const result = [];
+      String(text).split("**").forEach((part, i) => {
+        part.split("\n").forEach((line, j) => {
+          if (line === "" && j === 0) return;
+          result.push(new TextRun({ text: line, bold: bold || i % 2 === 1, size: size * 2, font: FONT, break: j > 0 ? 1 : 0 }));
         });
       });
-      return sonuc;
+      return result;
     }
 
-    function paragraf(metin, secenek = {}) {
-      const { boyut = 10.5, kalin = false, hiza = AlignmentType.LEFT, sonra = 60, girinti } = secenek;
+    function paragraph(text, options = {}) {
+      const { size = 10.5, bold = false, align = AlignmentType.LEFT, after = 60, indent } = options;
       return new Paragraph({
-        children: kosular(metin, boyut, kalin),
-        alignment: hiza,
-        spacing: { after: sonra },
-        indent: girinti ? { left: cm(girinti), hanging: cm(girinti) } : undefined,
+        children: runs(text, size, bold),
+        alignment: align,
+        spacing: { after },
+        indent: indent ? { left: cm(indent), hanging: cm(indent) } : undefined,
       });
     }
 
-    function hucreYap(metin, genislikCm, secenek = {}) {
-      const { boyut = 9, kalin = false, etiket = false, ortala = false, yay = 1, kenarsiz = false } = secenek;
+    function makeCell(text, widthCm, options = {}) {
+      const { size = 9, bold = false, label = false, center = false, span = 1, borderless = false } = options;
       return new TableCell({
-        children: [paragraf(metin, { boyut, kalin: kalin || etiket, hiza: ortala ? AlignmentType.CENTER : AlignmentType.LEFT, sonra: 0 })],
-        width: { size: cm(genislikCm), type: WidthType.DXA },
-        columnSpan: yay,
+        children: [paragraph(text, { size, bold: bold || label, align: center ? AlignmentType.CENTER : AlignmentType.LEFT, after: 0 })],
+        width: { size: cm(widthCm), type: WidthType.DXA },
+        columnSpan: span,
         verticalAlign: VerticalAlign.CENTER,
-        shading: etiket ? { type: ShadingType.CLEAR, color: "auto", fill: ETIKET_RENGI } : undefined,
-        borders: kenarsiz ? KENARSIZ_HUCRE : undefined,
+        shading: label ? { type: ShadingType.CLEAR, color: "auto", fill: LABEL_FILL } : undefined,
+        borders: borderless ? NO_CELL_BORDERS : undefined,
         margins: { top: 30, bottom: 30, left: 70, right: 70 },
       });
     }
 
-    /** Başlık satırı gölgeli, kenarlıklı tablo. `ortala`: ortalanacak sütun dizinleri. */
-    function tablo(basliklar, satirlar, genislikler, secenek = {}) {
-      const { boyut = 9, ortala = [], ekSatirlar = [] } = secenek;
-      const baslikSatiri = new TableRow({
+    /** Bordered table with a shaded header row. `center`: indexes of the columns to center. */
+    function table(headers, rows, widths, options = {}) {
+      const { size = 9, center = [], extraRows = [] } = options;
+      const headerRow = new TableRow({
         tableHeader: true,
-        children: basliklar.map((b, i) => hucreYap(b, genislikler[i], { boyut, etiket: true, ortala: true })),
+        children: headers.map((h, i) => makeCell(h, widths[i], { size, label: true, center: true })),
       });
-      const govde = satirlar.map((satir) => new TableRow({
-        children: satir.map((deger, i) => hucreYap(deger, genislikler[i], { boyut, ortala: ortala.includes(i) })),
+      const body = rows.map((row) => new TableRow({
+        children: row.map((value, i) => makeCell(value, widths[i], { size, center: center.includes(i) })),
       }));
       return new Table({
-        rows: [baslikSatiri, ...govde, ...ekSatirlar],
-        columnWidths: genislikler.map(cm),
-        width: { size: cm(genislikler.reduce((a, b) => a + b, 0)), type: WidthType.DXA },
+        rows: [headerRow, ...body, ...extraRows],
+        columnWidths: widths.map(cm),
+        width: { size: cm(widths.reduce((a, b) => a + b, 0)), type: WidthType.DXA },
         alignment: AlignmentType.CENTER,
       });
     }
 
-    function kenarsizTablo(hucreler, toplamCm, boyut = 10.5) {
-      const genislik = toplamCm / hucreler.length;
+    function borderlessTable(cells, totalCm, size = 10.5) {
+      const width = totalCm / cells.length;
       return new Table({
-        rows: [new TableRow({ children: hucreler.map((m) => hucreYap(m, genislik, { boyut, ortala: true, kenarsiz: true })) })],
-        columnWidths: hucreler.map(() => cm(genislik)),
-        width: { size: cm(toplamCm), type: WidthType.DXA },
+        rows: [new TableRow({ children: cells.map((m) => makeCell(m, width, { size, center: true, borderless: true })) })],
+        columnWidths: cells.map(() => cm(width)),
+        width: { size: cm(totalCm), type: WidthType.DXA },
         alignment: AlignmentType.CENTER,
-        borders: { top: KENARSIZ, bottom: KENARSIZ, left: KENARSIZ, right: KENARSIZ, insideHorizontal: KENARSIZ, insideVertical: KENARSIZ },
+        borders: { top: NO_BORDER, bottom: NO_BORDER, left: NO_BORDER, right: NO_BORDER, insideHorizontal: NO_BORDER, insideVertical: NO_BORDER },
       });
     }
 
-    function satirYap(hucreler) {
-      return new TableRow({ children: hucreler });
+    function makeRow(cells) {
+      return new TableRow({ children: cells });
     }
 
-    return { cm, paragraf, hucreYap, tablo, kenarsizTablo, satirYap };
+    return { cm, paragraph, makeCell, table, borderlessTable, makeRow };
   }
 
-  // ── Belge ─────────────────────────────────────────────────
+  // ── Document ──────────────────────────────────────────────
   /**
-   * @param docx  docx.js kütüphanesi
-   * @param bilgi {okul, ders, egitimYili, donem, verilis, planTeslim, araKontrol, teslim,
-   *               ogretmenler: string[], dersTuru: "atolye"|"sinif", tutum: {metin, puan}[],
-   *               konular: {baslik, birim, tur, urun, sorular: string[]}[]}
-   *              Konu girilmemişse konu, soru ve dağılım tabloları boş satırlarla çıkar.
-   *              Her sınıfın `dagilim` dizisi (öğrenci sırası → konu dizini) varsa o kullanılır.
-   *              Okul müdürünün adı belgeye yazılmaz; imza yerinde elle yazılır.
-   * @param siniflar sinifListesiOku çıktılarının dizisi (şube başına bir tane)
+   * @param docx  the docx.js library
+   * @param form {school, course, academicYear, term, assignedDate, planDueDate, interimCheckDate, dueDate,
+   *              teachers: string[], courseType: "workshop"|"classroom", attitude: {text, points}[],
+   *              topics: {title, unit, type, deliverable, questions: string[]}[]}
+   *              If no topics are entered, the topic, question and distribution tables come out with blank rows.
+   *              Each class's `distribution` array (student order → topic index) is used when present.
+   *              The principal's name is not written into the document; it is handwritten at the signature.
+   * @param classes array of readClassList results (one per section)
    */
-  function belgeOlustur(docx, bilgi, siniflar) {
+  function buildDocument(docx, form, classes) {
     const { Document, AlignmentType, PageOrientation } = docx;
-    const y = yardimcilar(docx);
-    const ORTA = AlignmentType.CENTER;
-    const sinifNo = siniflar.length ? siniflar[0].sinif : "…";
-    const nokta = (deger) => (deger && String(deger).trim() ? String(deger).trim() : "…………");
+    const h = helpers(docx);
+    const CENTER = AlignmentType.CENTER;
+    const grade = classes.length ? classes[0].grade : "…";
+    const dotted = (value) => (value && String(value).trim() ? String(value).trim() : "…………");
 
-    const baslik = (alt) => y.paragraf(
-      `${nokta(bilgi.okul).toLocaleUpperCase("tr")}\n${nokta(bilgi.egitimYili)} EĞİTİM-ÖĞRETİM YILI ` +
-      `${nokta(bilgi.ders).toLocaleUpperCase("tr")} DERSİ\n${sinifNo}. SINIF ${nokta(bilgi.donem)}. DÖNEM ${alt}`,
-      { boyut: 11, kalin: true, hiza: ORTA, sonra: 120 });
+    const heading = (subtitle) => h.paragraph(
+      `${dotted(form.school).toLocaleUpperCase("tr")}\n${dotted(form.academicYear)} EĞİTİM-ÖĞRETİM YILI ` +
+      `${dotted(form.course).toLocaleUpperCase("tr")} DERSİ\n${grade}. SINIF ${dotted(form.term)}. DÖNEM ${subtitle}`,
+      { size: 11, bold: true, align: CENTER, after: 120 });
 
-    const sayfa = (yatay) => ({
+    const page = (landscape) => ({
       page: {
-        size: { width: y.cm(21), height: y.cm(29.7), orientation: yatay ? PageOrientation.LANDSCAPE : PageOrientation.PORTRAIT },
+        size: { width: h.cm(21), height: h.cm(29.7), orientation: landscape ? PageOrientation.LANDSCAPE : PageOrientation.PORTRAIT },
         margin: {
-          top: y.cm(UST_ALT_KENAR_CM), bottom: y.cm(UST_ALT_KENAR_CM),
-          left: y.cm(yatay ? YATAY_KENAR_CM : DIKEY_KENAR_CM), right: y.cm(yatay ? YATAY_KENAR_CM : DIKEY_KENAR_CM),
+          top: h.cm(TOP_BOTTOM_MARGIN_CM), bottom: h.cm(TOP_BOTTOM_MARGIN_CM),
+          left: h.cm(landscape ? LANDSCAPE_MARGIN_CM : PORTRAIT_MARGIN_CM), right: h.cm(landscape ? LANDSCAPE_MARGIN_CM : PORTRAIT_MARGIN_CM),
         },
       },
     });
-    const bolumler = [];
-    const bolumEkle = (cocuklar, yatay = false) => bolumler.push({ properties: sayfa(yatay), children: cocuklar });
+    const sections = [];
+    const addSection = (children, landscape = false) => sections.push({ properties: page(landscape), children });
 
-    const konular = konulariDuzenle(bilgi.konular);
-    const konuVar = konular.length > 0;
-    const dagilimlar = new Map(siniflar.map((sinif) =>
-      [sinif, konuVar ? dagilimDuzenle(sinif.dagilim, konular.length, sinif.ogrenciler.length) : null]));
-    const konuTekrarli = konuVar && siniflar.some((sinif) => sinif.ogrenciler.length > konular.length);
-    const gorevTuruMetni = !konuVar
+    const topics = normalizeTopics(form.topics);
+    const hasTopics = topics.length > 0;
+    const distributions = new Map(classes.map((cls) =>
+      [cls, hasTopics ? normalizeDistribution(cls.distribution, topics.length, cls.students.length) : null]));
+    const topicsRepeat = hasTopics && classes.some((cls) => cls.students.length > topics.length);
+    const taskTypeText = !hasTopics
       ? "Bireysel. Her öğrenciye ayrı konu verilir; konular e-Okul sınıf listesindeki sıraya göre dağıtılır (Konu Dağılım Listesi)."
       : "Bireysel. Konular öğrencilere kura ile (rastgele) dağıtılır (Konu Dağılım Listesi)."
-        + (konuTekrarli ? " Aynı konu birden fazla öğrenciye verilebilir; her öğrenci çalışmasını bireysel hazırlar." : "");
+        + (topicsRepeat ? " Aynı konu birden fazla öğrenciye verilebilir; her öğrenci çalışmasını bireysel hazırlar." : "");
 
-    // 1. Yönerge
-    const bilgiSatirlari = [
-      ["Görevin veriliş tarihi", nokta(bilgi.verilis)],
-      ["Çalışma planı teslimi", nokta(bilgi.planTeslim)],
-      ["Ara kontrol", nokta(bilgi.araKontrol)],
-      ["Görevin teslim tarihi", `**${nokta(bilgi.teslim)}**`],
-      ["Görev türü", gorevTuruMetni],
+    // 1. Instructions
+    const infoRows = [
+      ["Görevin veriliş tarihi", dotted(form.assignedDate)],
+      ["Çalışma planı teslimi", dotted(form.planDueDate)],
+      ["Ara kontrol", dotted(form.interimCheckDate)],
+      ["Görevin teslim tarihi", `**${dotted(form.dueDate)}**`],
+      ["Görev türü", taskTypeText],
       ["Değerlendirme", "Zümre Performans Değerlendirme Ölçeği (100 puan). Performans notu öğrenciye anında bildirilir."],
     ];
-    const bilgiTablosu = new docx.Table({
-      rows: bilgiSatirlari.map(([etiket, deger]) => y.satirYap([
-        y.hucreYap(etiket, 4.5, { boyut: 10, etiket: true }),
-        y.hucreYap(deger, DIKEY_GENISLIK_CM - 4.5, { boyut: 10 }),
+    const infoTable = new docx.Table({
+      rows: infoRows.map(([label, value]) => h.makeRow([
+        h.makeCell(label, 4.5, { size: 10, label: true }),
+        h.makeCell(value, PORTRAIT_WIDTH_CM - 4.5, { size: 10 }),
       ])),
-      columnWidths: [y.cm(4.5), y.cm(DIKEY_GENISLIK_CM - 4.5)],
-      width: { size: y.cm(DIKEY_GENISLIK_CM), type: docx.WidthType.DXA },
+      columnWidths: [h.cm(4.5), h.cm(PORTRAIT_WIDTH_CM - 4.5)],
+      width: { size: h.cm(PORTRAIT_WIDTH_CM), type: docx.WidthType.DXA },
     });
-    const ogretmenler = (bilgi.ogretmenler || []).map((o) => o.trim()).filter(Boolean);
-    const imzaAdlari = ogretmenler.length ? ogretmenler : ["[Adı SOYADI]"];
-    const IMZA_SUTUN = 3;
-    const imzaSatirlari = [];
-    for (let i = 0; i < imzaAdlari.length; i += IMZA_SUTUN) {
-      imzaSatirlari.push(y.kenarsizTablo(imzaAdlari.slice(i, i + IMZA_SUTUN).map((ad) => `${ad}\nÖğretmen`), DIKEY_GENISLIK_CM));
-      imzaSatirlari.push(y.paragraf("", { sonra: 120 }));
+    const teachers = (form.teachers || []).map((t) => t.trim()).filter(Boolean);
+    const signatureNames = teachers.length ? teachers : ["[Adı SOYADI]"];
+    const SIGNATURE_COLUMNS = 3;
+    const signatureRows = [];
+    for (let i = 0; i < signatureNames.length; i += SIGNATURE_COLUMNS) {
+      signatureRows.push(h.borderlessTable(signatureNames.slice(i, i + SIGNATURE_COLUMNS).map((name) => `${name}\nÖğretmen`), PORTRAIT_WIDTH_CM));
+      signatureRows.push(h.paragraph("", { after: 120 }));
     }
-    bolumEkle([
-      baslik("PERFORMANS GÖREVİ YÖNERGESİ"),
-      bilgiTablosu,
-      y.paragraf("Görevin Amacı", { boyut: 11, kalin: true, sonra: 60 }),
-      y.paragraf("[Bu dönem işlenen öğrenme birimlerini ve görevin öğrenciye ne kazandıracağını 2-3 cümleyle yazınız.]", { hiza: AlignmentType.JUSTIFIED }),
-      y.paragraf("Görev Türleri", { boyut: 11, kalin: true }),
-      ...GOREV_TURLERI.filter(([ad]) => !konuVar || konular.some((k) => k.tur === ad))
-        .map(([ad, aciklama]) => y.paragraf(`• **${ad}:** ${aciklama}`, { girinti: 0.4 })),
-      y.paragraf("Raporun Bölümleri", { boyut: 11, kalin: true }),
-      ...RAPOR_BOLUMLERI.map((b, i) => y.paragraf(`${i + 1}. ${b}`, { girinti: 0.5, sonra: 20 })),
-      y.paragraf("Kurallar", { boyut: 11, kalin: true }),
-      ...KURALLAR.map((k) => y.paragraf(`• ${k}`, { girinti: 0.4 })),
-      y.paragraf("", { sonra: 120 }),
-      ...imzaSatirlari,
-      y.paragraf(".... / .... / 20....\n**Uygundur**\n\n\n……………………………………\nOkul Müdürü", { hiza: ORTA }),
+    addSection([
+      heading("PERFORMANS GÖREVİ YÖNERGESİ"),
+      infoTable,
+      h.paragraph("Görevin Amacı", { size: 11, bold: true, after: 60 }),
+      h.paragraph("[Bu dönem işlenen öğrenme birimlerini ve görevin öğrenciye ne kazandıracağını 2-3 cümleyle yazınız.]", { align: AlignmentType.JUSTIFIED }),
+      h.paragraph("Görev Türleri", { size: 11, bold: true }),
+      ...TASK_TYPES.filter(([name]) => !hasTopics || topics.some((t) => t.type === name))
+        .map(([name, description]) => h.paragraph(`• **${name}:** ${description}`, { indent: 0.4 })),
+      h.paragraph("Raporun Bölümleri", { size: 11, bold: true }),
+      ...REPORT_SECTIONS.map((s, i) => h.paragraph(`${i + 1}. ${s}`, { indent: 0.5, after: 20 })),
+      h.paragraph("Kurallar", { size: 11, bold: true }),
+      ...RULES.map((rule) => h.paragraph(`• ${rule}`, { indent: 0.4 })),
+      h.paragraph("", { after: 120 }),
+      ...signatureRows,
+      h.paragraph(".... / .... / 20....\n**Uygundur**\n\n\n……………………………………\nOkul Müdürü", { align: CENTER }),
     ]);
 
-    // 2. Konu listesi ve sorular (formda girilmediyse boş satırlar)
-    const enKalabalik = siniflar.reduce((en, s) => Math.max(en, s.ogrenciler.length), 0);
-    const konuSatiri = Math.max(EN_AZ_KONU_SATIRI, enKalabalik);
-    const numaralar = Array.from({ length: konuSatiri }, (_, i) => i + 1);
-    const konuSatirlari = konuVar
-      ? konular.map((k, i) => [i + 1, k.baslik, k.birim, k.tur, k.urun])
-      : numaralar.map((n) => [n, "", "", "", ""]);
-    const soruSatirlari = konuVar
-      ? konular.map((k, i) => [i + 1, k.baslik,
-        k.sorular.length ? k.sorular.map((soru, j) => `${j + 1}. ${soru}`).join("\n") : "1.\n2."])
-      : numaralar.map((n) => [n, "", "1.\n2."]);
-    bolumEkle([
-      baslik("PERFORMANS GÖREVİ KONULARI"),
-      y.tablo(["No", "Konu", "Öğrenme Birimi", "Görev Türü", "Öğrenciden Beklenen Çalışma"],
-        konuSatirlari, [1, 5, 3, 2.6, 5.8], { boyut: 8.5, ortala: [0, 3] }),
+    // 2. Topic list and questions (blank rows if not entered in the form)
+    const largestClass = classes.reduce((max, c) => Math.max(max, c.students.length), 0);
+    const topicRowCount = Math.max(MIN_TOPIC_ROWS, largestClass);
+    const numbers = Array.from({ length: topicRowCount }, (_, i) => i + 1);
+    const topicRows = hasTopics
+      ? topics.map((t, i) => [i + 1, t.title, t.unit, t.type, t.deliverable])
+      : numbers.map((n) => [n, "", "", "", ""]);
+    const questionRows = hasTopics
+      ? topics.map((t, i) => [i + 1, t.title,
+        t.questions.length ? t.questions.map((question, j) => `${j + 1}. ${question}`).join("\n") : "1.\n2."])
+      : numbers.map((n) => [n, "", "1.\n2."]);
+    addSection([
+      heading("PERFORMANS GÖREVİ KONULARI"),
+      h.table(["No", "Konu", "Öğrenme Birimi", "Görev Türü", "Öğrenciden Beklenen Çalışma"],
+        topicRows, [1, 5, 3, 2.6, 5.8], { size: 8.5, center: [0, 3] }),
     ]);
-    bolumEkle([
-      baslik("PERFORMANS GÖREVİ SORULARI"),
-      y.paragraf("Her öğrenci kendi konu numarasındaki soruların **tamamını** raporunun \"Soruların Cevapları\" bölümünde gerekçeli olarak cevaplar.", { boyut: 9 }),
-      y.tablo(["No", "Konu", "Cevaplanacak Sorular"],
-        soruSatirlari, [1, 5, 11.4], { boyut: 8.5, ortala: [0] }),
+    addSection([
+      heading("PERFORMANS GÖREVİ SORULARI"),
+      h.paragraph("Her öğrenci kendi konu numarasındaki soruların **tamamını** raporunun \"Soruların Cevapları\" bölümünde gerekçeli olarak cevaplar.", { size: 9 }),
+      h.table(["No", "Konu", "Cevaplanacak Sorular"],
+        questionRows, [1, 5, 11.4], { size: 8.5, center: [0] }),
     ]);
 
-    // 3. Konu dağılım listesi (şube başına)
-    const konuNo = (sinif, sira) => (konuVar ? dagilimlar.get(sinif)[sira] + 1 : sira + 1);
-    for (const sinif of siniflar) {
-      bolumEkle([
-        baslik("PERFORMANS GÖREVİ KONU DAĞILIM LİSTESİ"),
-        y.paragraf(`**Sınıf / Şube:** ${sinif.sube}     **Öğrenci sayısı:** ${sinif.ogrenciler.length}     **Teslim:** ${nokta(bilgi.teslim)}`, { boyut: 9 }),
-        y.tablo(["S.No", "Öğr. No", "Adı Soyadı", "Konu No", "Konu", "Görev Türü", "Tebellüğ\nİmza"],
-          sinif.ogrenciler.map((o, i) => {
-            const konu = konuVar ? konular[dagilimlar.get(sinif)[i]] : null;
-            return [i + 1, o.no, `${o.ad} ${o.soyad}`, konuNo(sinif, i), konu ? konu.baslik : "", konu ? konu.tur : "", ""];
+    // 3. Topic distribution list (one per section)
+    const topicNumber = (cls, index) => (hasTopics ? distributions.get(cls)[index] + 1 : index + 1);
+    for (const cls of classes) {
+      addSection([
+        heading("PERFORMANS GÖREVİ KONU DAĞILIM LİSTESİ"),
+        h.paragraph(`**Sınıf / Şube:** ${cls.section}     **Öğrenci sayısı:** ${cls.students.length}     **Teslim:** ${dotted(form.dueDate)}`, { size: 9 }),
+        h.table(["S.No", "Öğr. No", "Adı Soyadı", "Konu No", "Konu", "Görev Türü", "Tebellüğ\nİmza"],
+          cls.students.map((s, i) => {
+            const topic = hasTopics ? topics[distributions.get(cls)[i]] : null;
+            return [i + 1, s.number, `${s.firstName} ${s.lastName}`, topicNumber(cls, i), topic ? topic.title : "", topic ? topic.type : "", ""];
           }),
-          [1, 1.4, 4.4, 1.2, 5, 2.4, 2], { boyut: 8.5, ortala: [0, 1, 3, 5] }),
+          [1, 1.4, 4.4, 1.2, 5, 2.4, 2], { size: 8.5, center: [0, 1, 3, 5] }),
       ]);
     }
 
-    // 4. Dereceli puanlama anahtarı
-    const SEVIYE_CM = 3.05;
-    bolumEkle([
-      baslik("PERFORMANS GÖREVİ DERECELİ PUANLAMA ANAHTARI"),
-      y.paragraf("Ölçütler ve puanları zümrenin Performans Değerlendirme Ölçeği ile aynıdır; seviye betimleri öğrencinin görevden ne beklendiğini önceden bilmesi için eklenmiştir. Bu sayfa görevle birlikte öğrenciye verilir. Betimler derse göre uyarlanabilir.", { boyut: 9.5 }),
-      y.tablo(["Ölçüt", "Puan", ...SEVIYELER],
-        OLCUTLER.map(([kisa, metin, puan, betimler]) => [
-          `**${kisa}**\n${metin}`, `**${puan}**`,
-          ...betimler.map((betim, i) => `**(${ARALIK[puan][i]})** ${betim}`),
+    // 4. Graded scoring rubric
+    const LEVEL_CM = 3.05;
+    addSection([
+      heading("PERFORMANS GÖREVİ DERECELİ PUANLAMA ANAHTARI"),
+      h.paragraph("Ölçütler ve puanları zümrenin Performans Değerlendirme Ölçeği ile aynıdır; seviye betimleri öğrencinin görevden ne beklendiğini önceden bilmesi için eklenmiştir. Bu sayfa görevle birlikte öğrenciye verilir. Betimler derse göre uyarlanabilir.", { size: 9.5 }),
+      h.table(["Ölçüt", "Puan", ...LEVELS],
+        CRITERIA.map(([shortName, text, points, descriptors]) => [
+          `**${shortName}**\n${text}`, `**${points}**`,
+          ...descriptors.map((descriptor, i) => `**(${SCORE_RANGES[points][i]})** ${descriptor}`),
         ]),
-        [4, 1.2, SEVIYE_CM, SEVIYE_CM, SEVIYE_CM, SEVIYE_CM],
+        [4, 1.2, LEVEL_CM, LEVEL_CM, LEVEL_CM, LEVEL_CM],
         {
-          boyut: 8.5, ortala: [1],
-          ekSatirlar: [y.satirYap([
-            y.hucreYap("TOPLAM: 100", 5.2, { boyut: 8.5, kalin: true, ortala: true, yay: 2 }),
-            y.hucreYap("**Not:** Puan aralıkları öğretmene yol göstericidir; her ölçütün puanı ölçüt puanını aşamaz.", 4 * SEVIYE_CM, { boyut: 8.5, yay: 4 }),
+          size: 8.5, center: [1],
+          extraRows: [h.makeRow([
+            h.makeCell("TOPLAM: 100", 5.2, { size: 8.5, bold: true, center: true, span: 2 }),
+            h.makeCell("**Not:** Puan aralıkları öğretmene yol göstericidir; her ölçütün puanı ölçüt puanını aşamaz.", 4 * LEVEL_CM, { size: 8.5, span: 4 }),
           ])],
         }),
     ]);
 
-    // 5. Bireysel değerlendirme formu
-    const kimlikTablosu = new docx.Table({
+    // 5. Individual assessment form
+    const identityTable = new docx.Table({
       rows: [
-        y.satirYap([y.hucreYap("Adı Soyadı", 3, { boyut: 10, etiket: true }), y.hucreYap("", 5.7, { boyut: 10 }),
-          y.hucreYap("Sınıfı / No", 3, { boyut: 10, etiket: true }), y.hucreYap("", 5.7, { boyut: 10 })]),
-        y.satirYap([y.hucreYap("Konu No", 3, { boyut: 10, etiket: true }), y.hucreYap("", 5.7, { boyut: 10 }),
-          y.hucreYap("Teslim Tarihi", 3, { boyut: 10, etiket: true }), y.hucreYap("", 5.7, { boyut: 10 })]),
-        y.satirYap([y.hucreYap("Konu", 3, { boyut: 10, etiket: true }), y.hucreYap("", 14.4, { boyut: 10, yay: 3 })]),
+        h.makeRow([h.makeCell("Adı Soyadı", 3, { size: 10, label: true }), h.makeCell("", 5.7, { size: 10 }),
+          h.makeCell("Sınıfı / No", 3, { size: 10, label: true }), h.makeCell("", 5.7, { size: 10 })]),
+        h.makeRow([h.makeCell("Konu No", 3, { size: 10, label: true }), h.makeCell("", 5.7, { size: 10 }),
+          h.makeCell("Teslim Tarihi", 3, { size: 10, label: true }), h.makeCell("", 5.7, { size: 10 })]),
+        h.makeRow([h.makeCell("Konu", 3, { size: 10, label: true }), h.makeCell("", 14.4, { size: 10, span: 3 })]),
       ],
-      columnWidths: [3, 5.7, 3, 5.7].map(y.cm),
-      width: { size: y.cm(DIKEY_GENISLIK_CM), type: docx.WidthType.DXA },
+      columnWidths: [3, 5.7, 3, 5.7].map(h.cm),
+      width: { size: h.cm(PORTRAIT_WIDTH_CM), type: docx.WidthType.DXA },
     });
-    bolumEkle([
-      baslik("PERFORMANS DEĞERLENDİRME ÖLÇEĞİ"),
-      kimlikTablosu,
-      y.paragraf("", { sonra: 120 }),
-      y.tablo(["No", "ÖĞRENCİDE GÖZLENECEK ÖZELLİKLER", "PUANI", "ALDIĞI PUAN"],
-        OLCUTLER.map(([, metin, puan], i) => [i + 1, metin, puan, ""]), [1, 11.4, 2, 3],
+    addSection([
+      heading("PERFORMANS DEĞERLENDİRME ÖLÇEĞİ"),
+      identityTable,
+      h.paragraph("", { after: 120 }),
+      h.table(["No", "ÖĞRENCİDE GÖZLENECEK ÖZELLİKLER", "PUANI", "ALDIĞI PUAN"],
+        CRITERIA.map(([, text, points], i) => [i + 1, text, points, ""]), [1, 11.4, 2, 3],
         {
-          boyut: 10, ortala: [0, 2, 3],
-          ekSatirlar: [y.satirYap([
-            y.hucreYap("DEĞERLENDİRME GENEL TOPLAMI", 12.4, { boyut: 10, kalin: true, yay: 2 }),
-            y.hucreYap("100", 2, { boyut: 10, kalin: true, ortala: true }),
-            y.hucreYap("", 3, { boyut: 10 }),
+          size: 10, center: [0, 2, 3],
+          extraRows: [h.makeRow([
+            h.makeCell("DEĞERLENDİRME GENEL TOPLAMI", 12.4, { size: 10, bold: true, span: 2 }),
+            h.makeCell("100", 2, { size: 10, bold: true, center: true }),
+            h.makeCell("", 3, { size: 10 }),
           ])],
         }),
-      y.paragraf("\n**Öğretmen görüşü:**\n\n\n\n"),
-      y.kenarsizTablo(["Öğrencinin İmzası", "Ders Öğretmeni\nAdı Soyadı / İmza"], DIKEY_GENISLIK_CM),
+      h.paragraph("\n**Öğretmen görüşü:**\n\n\n\n"),
+      h.borderlessTable(["Öğrencinin İmzası", "Ders Öğretmeni\nAdı Soyadı / İmza"], PORTRAIT_WIDTH_CM),
     ]);
 
-    // 6. Sınıf çizelgeleri (yatay)
-    function topluCizelge(sinif, alt, olcutBasliklari, aciklama, konuSutunu, toplamPuan = EN_COK_PUAN) {
-      const sabit = [1, 1.4, 5.4].concat(konuSutunu ? [1.3] : []);
-      const TOPLAM_CM = 1.6;
-      const olcutCm = (YATAY_GENISLIK_CM - sabit.reduce((a, b) => a + b, 0) - TOPLAM_CM) / olcutBasliklari.length;
-      const basliklar = ["S.No", "Öğr. No", "Adı Soyadı"].concat(konuSutunu ? ["Konu No"] : [], olcutBasliklari, [`TOPLAM\n(${toplamPuan})`]);
-      const genislikler = sabit.concat(olcutBasliklari.map(() => olcutCm), [TOPLAM_CM]);
-      const satirlar = sinif.ogrenciler.map((o, i) => [i + 1, o.no, `${o.ad} ${o.soyad}`]
-        .concat(konuSutunu ? [konuNo(sinif, i)] : [], olcutBasliklari.map(() => ""), [""]));
-      bolumEkle([
-        baslik(alt),
-        y.paragraf(`**Sınıf / Şube:** ${sinif.sube}     **Ders Öğretmeni:** ……………………………………     ${aciklama}`, { boyut: 8.5 }),
-        y.tablo(basliklar, satirlar, genislikler, { boyut: 8, ortala: basliklar.map((_, i) => i).filter((i) => i !== 2) }),
+    // 6. Class score sheets (landscape)
+    function classScoreSheet(cls, subtitle, criterionHeaders, note, hasTopicColumn, totalPoints = MAX_POINTS) {
+      const fixed = [1, 1.4, 5.4].concat(hasTopicColumn ? [1.3] : []);
+      const TOTAL_CM = 1.6;
+      const criterionCm = (LANDSCAPE_WIDTH_CM - fixed.reduce((a, b) => a + b, 0) - TOTAL_CM) / criterionHeaders.length;
+      const headers = ["S.No", "Öğr. No", "Adı Soyadı"].concat(hasTopicColumn ? ["Konu No"] : [], criterionHeaders, [`TOPLAM\n(${totalPoints})`]);
+      const widths = fixed.concat(criterionHeaders.map(() => criterionCm), [TOTAL_CM]);
+      const rows = cls.students.map((s, i) => [i + 1, s.number, `${s.firstName} ${s.lastName}`]
+        .concat(hasTopicColumn ? [topicNumber(cls, i)] : [], criterionHeaders.map(() => ""), [""]));
+      addSection([
+        heading(subtitle),
+        h.paragraph(`**Sınıf / Şube:** ${cls.section}     **Ders Öğretmeni:** ……………………………………     ${note}`, { size: 8.5 }),
+        h.table(headers, rows, widths, { size: 8, center: headers.map((_, i) => i).filter((i) => i !== 2) }),
       ], true);
     }
-    for (const sinif of siniflar) {
-      topluCizelge(sinif, "PERFORMANS GÖREVİ SINIF DEĞERLENDİRME ÇİZELGESİ",
-        OLCUTLER.map(([kisa, , puan]) => `${kisa}\n(${puan})`),
+    for (const cls of classes) {
+      classScoreSheet(cls, "PERFORMANS GÖREVİ SINIF DEĞERLENDİRME ÇİZELGESİ",
+        CRITERIA.map(([shortName, , points]) => `${shortName}\n(${points})`),
         "Ölçütler zümre Performans Değerlendirme Ölçeği ile aynıdır.", true);
     }
 
-    // 7. Tutum ve davranış ölçeği + çizelgeleri
-    const atolye = bilgi.dersTuru !== "sinif";
-    const tutum = tutumDuzenle(bilgi.tutum, atolye ? "atolye" : "sinif");
-    const tutumToplami = tutumToplam(tutum);
-    if (tutumToplami > EN_COK_PUAN) {
-      throw new Error(`Tutum ölçeğinin toplam puanı ${tutumToplami}; ${EN_COK_PUAN} puanı geçemez.`);
+    // 7. Attitude and behaviour scale + score sheets
+    const isWorkshop = form.courseType !== "classroom";
+    const attitude = normalizeAttitude(form.attitude, isWorkshop ? "workshop" : "classroom");
+    const attitudeSum = attitudeTotal(attitude);
+    if (attitudeSum > MAX_POINTS) {
+      throw new Error(`Tutum ölçeğinin toplam puanı ${attitudeSum}; ${MAX_POINTS} puanı geçemez.`);
     }
-    bolumEkle([
-      baslik(`${atolye ? "ATÖLYE" : "SINIF"} İÇİ TUTUM VE DAVRANIŞ PERFORMANS ÖLÇEĞİ`),
-      y.paragraf(`Zümre kararı gereği birinci performans notu; öğrencinin ${atolye ? "atölye" : "sınıf"} içi tutum ve davranışları, derse katılımı ve ders araç-gereçlerini düzenli getirmesi esas alınarak dönem boyunca yapılan gözlemlerle verilir.`, { boyut: 9.5 }),
-      y.tablo(["No", "ÖĞRENCİDE GÖZLENECEK ÖZELLİKLER", "PUANI"],
-        tutum.map((madde, i) => [i + 1, madde.metin, madde.puan]), [1, 14.4, 2],
+    addSection([
+      heading(`${isWorkshop ? "ATÖLYE" : "SINIF"} İÇİ TUTUM VE DAVRANIŞ PERFORMANS ÖLÇEĞİ`),
+      h.paragraph(`Zümre kararı gereği birinci performans notu; öğrencinin ${isWorkshop ? "atölye" : "sınıf"} içi tutum ve davranışları, derse katılımı ve ders araç-gereçlerini düzenli getirmesi esas alınarak dönem boyunca yapılan gözlemlerle verilir.`, { size: 9.5 }),
+      h.table(["No", "ÖĞRENCİDE GÖZLENECEK ÖZELLİKLER", "PUANI"],
+        attitude.map((item, i) => [i + 1, item.text, item.points]), [1, 14.4, 2],
         {
-          boyut: 10, ortala: [0, 2],
-          ekSatirlar: [y.satirYap([
-            y.hucreYap("TOPLAM", 15.4, { boyut: 10, kalin: true, yay: 2 }),
-            y.hucreYap(String(tutumToplami), 2, { boyut: 10, kalin: true, ortala: true }),
+          size: 10, center: [0, 2],
+          extraRows: [h.makeRow([
+            h.makeCell("TOPLAM", 15.4, { size: 10, bold: true, span: 2 }),
+            h.makeCell(String(attitudeSum), 2, { size: 10, bold: true, center: true }),
           ])],
         }),
     ]);
-    for (const sinif of siniflar) {
-      topluCizelge(sinif, "TUTUM VE DAVRANIŞ SINIF DEĞERLENDİRME ÇİZELGESİ",
-        tutum.map((madde, i) => `Ölçüt ${i + 1}\n(${madde.puan})`),
-        "Ölçüt numaraları bir önceki sayfadaki ölçekle aynıdır.", false, tutumToplami);
+    for (const cls of classes) {
+      classScoreSheet(cls, "TUTUM VE DAVRANIŞ SINIF DEĞERLENDİRME ÇİZELGESİ",
+        attitude.map((item, i) => `Ölçüt ${i + 1}\n(${item.points})`),
+        "Ölçüt numaraları bir önceki sayfadaki ölçekle aynıdır.", false, attitudeSum);
     }
 
     return new Document({
       creator: "Performans Görevi Formu",
-      title: `${nokta(bilgi.ders)} Performans Görevi`,
-      styles: { default: { document: { run: { font: YAZI_TIPI, size: 21 } } } },
-      sections: bolumler,
+      title: `${dotted(form.course)} Performans Görevi`,
+      styles: { default: { document: { run: { font: FONT, size: 21 } } } },
+      sections,
     });
   }
 
-  /** Başlığı boş konuları atar, alanları kırpar. */
-  function konulariDuzenle(konular) {
-    const kirp = (deger) => String(deger || "").trim();
-    return (konular || [])
-      .map((k) => ({
-        baslik: kirp(k.baslik), birim: kirp(k.birim), tur: gorevTuruEslestir(k.tur) || VARSAYILAN_GOREV_TURU, urun: kirp(k.urun),
-        sorular: (k.sorular || []).map(kirp).filter(Boolean),
+  /** Drops topics with an empty title and trims the fields. */
+  function normalizeTopics(topics) {
+    const trim = (value) => String(value || "").trim();
+    return (topics || [])
+      .map((t) => ({
+        title: trim(t.title), unit: trim(t.unit), type: matchTaskType(t.type) || DEFAULT_TASK_TYPE, deliverable: trim(t.deliverable),
+        questions: (t.questions || []).map(trim).filter(Boolean),
       }))
-      .filter((k) => k.baslik);
+      .filter((t) => t.title);
   }
 
   /**
-   * Konuları öğrencilere rastgele ve dengeli dağıtır; öğrenci sırası → konu dizini döner.
-   * Konu azsa her konu eşit sayıda (en çok bir fark) tekrar eder; konu fazlaysa rastgele seçilenler verilir.
+   * Distributes topics to students randomly and evenly; returns student order → topic index.
+   * With fewer topics, each topic repeats equally often (at most one apart); with more topics, a random subset is used.
    */
-  function konuDagit(konuSayisi, ogrenciSayisi, rastgele = Math.random) {
-    if (konuSayisi <= 0) return [];
-    const karistir = (dizi) => {
-      for (let i = dizi.length - 1; i > 0; i--) {
-        const j = Math.floor(rastgele() * (i + 1));
-        [dizi[i], dizi[j]] = [dizi[j], dizi[i]];
+  function distributeTopics(topicCount, studentCount, random = Math.random) {
+    if (topicCount <= 0) return [];
+    const shuffle = (array) => {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
       }
-      return dizi;
+      return array;
     };
-    const deste = [];
-    while (deste.length < ogrenciSayisi) {
-      deste.push(...karistir(Array.from({ length: konuSayisi }, (_, i) => i)));
+    const deck = [];
+    while (deck.length < studentCount) {
+      deck.push(...shuffle(Array.from({ length: topicCount }, (_, i) => i)));
     }
-    return karistir(deste.slice(0, ogrenciSayisi));
+    return shuffle(deck.slice(0, studentCount));
   }
 
-  function dagilimGecerli(dagilim, konuSayisi, ogrenciSayisi) {
-    return Array.isArray(dagilim) && dagilim.length === ogrenciSayisi
-      && dagilim.every((d) => Number.isInteger(d) && d >= 0 && d < konuSayisi);
+  function isValidDistribution(distribution, topicCount, studentCount) {
+    return Array.isArray(distribution) && distribution.length === studentCount
+      && distribution.every((d) => Number.isInteger(d) && d >= 0 && d < topicCount);
   }
 
-  /** Geçerli bir dağılım yoksa konuları sırayla (tekrar ederek) dağıtır. */
-  function dagilimDuzenle(dagilim, konuSayisi, ogrenciSayisi) {
-    return dagilimGecerli(dagilim, konuSayisi, ogrenciSayisi)
-      ? dagilim : Array.from({ length: ogrenciSayisi }, (_, i) => i % konuSayisi);
+  /** Without a valid distribution, hands out topics in order (repeating). */
+  function normalizeDistribution(distribution, topicCount, studentCount) {
+    return isValidDistribution(distribution, topicCount, studentCount)
+      ? distribution : Array.from({ length: studentCount }, (_, i) => i % topicCount);
   }
 
-  /** Hazır maddeleri {metin, puan} biçiminde verir. */
-  function tutumVarsayilan(dersTuru) {
-    return TUTUM_VARSAYILAN[dersTuru === "sinif" ? "sinif" : "atolye"].map((metin) => ({ metin, puan: TUTUM_PUANI }));
+  /** Returns the built-in items as {text, points}. */
+  function defaultAttitude(courseType) {
+    return DEFAULT_ATTITUDE_ITEMS[courseType === "classroom" ? "classroom" : "workshop"].map((text) => ({ text, points: DEFAULT_ATTITUDE_POINTS }));
   }
 
-  /** Boş maddeleri atar, puanı tam sayıya çevirir; hiç madde yoksa hazır maddeleri kullanır. */
-  function tutumDuzenle(tutum, dersTuru) {
-    const dolu = (tutum || [])
-      .map((madde) => ({ metin: String(madde.metin || "").trim(), puan: Math.max(0, Math.round(Number(madde.puan) || 0)) }))
-      .filter((madde) => madde.metin);
-    return dolu.length ? dolu : tutumVarsayilan(dersTuru);
+  /** Drops empty items and rounds points to integers; falls back to the built-in items when none remain. */
+  function normalizeAttitude(attitude, courseType) {
+    const filled = (attitude || [])
+      .map((item) => ({ text: String(item.text || "").trim(), points: Math.max(0, Math.round(Number(item.points) || 0)) }))
+      .filter((item) => item.text);
+    return filled.length ? filled : defaultAttitude(courseType);
   }
 
-  function tutumToplam(tutum) {
-    return tutum.reduce((toplam, madde) => toplam + (Math.max(0, Math.round(Number(madde.puan) || 0))), 0);
+  function attitudeTotal(attitude) {
+    return attitude.reduce((total, item) => total + (Math.max(0, Math.round(Number(item.points) || 0))), 0);
   }
 
-  function dosyaAdi(bilgi, siniflar) {
-    const ders = (bilgi.ders || "ders").trim().replace(/[\\/:*?"<>|]+/g, " ").replace(/\s+/g, "-");
-    const subeler = siniflar.map((s) => s.sube.replace("/", "")).join("-");
-    return `Performans-Gorevi-${ders}${subeler ? "-" + subeler : ""}.docx`;
+  function documentFileName(form, classes) {
+    const course = (form.course || "ders").trim().replace(/[\\/:*?"<>|]+/g, " ").replace(/\s+/g, "-");
+    const sections = classes.map((c) => c.section.replace("/", "")).join("-");
+    return `Performans-Gorevi-${course}${sections ? "-" + sections : ""}.docx`;
   }
 
-  return { sinifListesiOku, belgeOlustur, dosyaAdi, tutumVarsayilan, tutumToplam, EN_COK_PUAN,
-    konulariDuzenle, konuDagit, dagilimGecerli, GOREV_TURU_ADLARI, gorevTuruEslestir };
+  return { readClassList, buildDocument, documentFileName, defaultAttitude, attitudeTotal, MAX_POINTS,
+    normalizeTopics, distributeTopics, isValidDistribution, TASK_TYPE_NAMES, matchTaskType };
 });
