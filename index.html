@@ -235,7 +235,7 @@
       <dt>Kaynak kod</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime" rel="noopener">github.com/Ataturk-MTAL/MetricusPrime</a></dd>
       <dt>Sorun bildirme</dt><dd><a href="https://github.com/Ataturk-MTAL/MetricusPrime/issues" rel="noopener">GitHub üzerinden</a></dd>
       <dt>Kullanılan kütüphaneler</dt><dd>SheetJS (Apache-2.0), docx (MIT)</dd>
-      <dt>Sürüm</dt><dd>1.13 · Ekim 2026</dd>
+      <dt>Sürüm</dt><dd>1.14 · Ekim 2026</dd>
     </dl>
   </section>
 
@@ -692,16 +692,26 @@
       $("copyStatus").textContent = "Kopyalanamadı; bağlantıyı elle kopyalayın: " + url;
     }
   });
-  /** Wipes everything, including class lists, saved form data and topics; the page returns to its initial state. */
-  function clearForm() {
-    if (!confirm("Formdaki tüm bilgiler, eklenen sınıf listeleri ve konular silinecek. Devam edilsin mi?")) return;
+  /** Privacy reset: deletes every piece of saved form data on this device and reloads the page. */
+  function clearSavedData() {
+    if (!confirm("Bu cihazda saklanan tüm form bilgileri, eklenen sınıf listeleri ve konular silinecek. Devam edilsin mi?")) return;
     try {
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(LEGACY_STORAGE_KEY);
     } catch (error) { /* storage is already disabled */ }
     location.reload();
   }
-  $("clearSavedData").addEventListener("click", clearForm);
+  /** Starts a new form but keeps the teacher's attitude scale (course type, items and points). */
+  function clearForm() {
+    if (!confirm("Formdaki bilgiler, eklenen sınıf listeleri ve konular silinecek. Tutum ve davranış ölçeği korunacak. Devam edilsin mi?")) return;
+    const { courseType: keptCourseType, attitude } = readForm();
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ courseType: keptCourseType, attitude }));
+      localStorage.removeItem(LEGACY_STORAGE_KEY);
+    } catch (error) { /* storage is disabled; the reload falls back to the default scale */ }
+    location.reload();
+  }
+  $("clearSavedData").addEventListener("click", clearSavedData);
   $("clearForm").addEventListener("click", clearForm);
 
   loadForm();
