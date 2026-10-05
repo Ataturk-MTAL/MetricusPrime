@@ -45,8 +45,13 @@ Bu belge MetricusPrime deposunda sorun (issue) açma, geliştirme ve birleştirm
 <tür>: <kısa açıklama>
 ```
 
-Türler: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`. Açıklama Türkçe yazılır.
-Örnek: `fix: sadece veri biçimindeki listede şube bulunamıyordu`.
+Türler: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`. Açıklama İngilizce yazılır.
+Örnek: `fix: section not found in the data-only class list export`.
+
+## Kod dili
+
+Kod İngilizce yazılır: değişken ve fonksiyon adları, HTML id'leri, CSS sınıfları ve değişkenleri, kod yorumları.
+Kullanıcının gördüğü metinler (sayfa yazıları, hata iletileri, Word belgesinin içeriği) Türkçe kalır.
 
 ## Sorun (issue) açma
 
