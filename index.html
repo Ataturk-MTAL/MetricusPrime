@@ -9,6 +9,7 @@
   :root {
     --zemin: #f6f7f9; --kart: #ffffff; --yazi: #1c2430; --soluk: #5b6675; --cizgi: #d5dae1;
     --vurgu: #1f5fbf; --vurgu-yazi: #ffffff; --hata: #b3261e; --hata-zemin: #fdecea; --tamam: #1b6e3c;
+    --size-title: 1.75rem; --size-section: 1.25rem; --size-small: .8rem;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -19,13 +20,13 @@
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--zemin); color: var(--yazi); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
   main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
-  h1 { font-size: 1.5rem; margin: 0 0 4px; }
-  h2 { font-size: 1.1rem; margin: 0 0 12px; }
+  h1 { font-size: var(--size-title); margin: 0 0 4px; }
+  h2 { font-size: var(--size-section); margin: 0 0 12px; }
   p.alt { color: var(--soluk); margin: 0 0 20px; }
   section { background: var(--kart); border: 1px solid var(--cizgi); border-radius: 12px; padding: 18px; margin-bottom: 16px; }
   .adim { display: inline-block; width: 1.7em; height: 1.7em; line-height: 1.7em; text-align: center; border-radius: 50%;
-          background: var(--vurgu); color: var(--vurgu-yazi); font-weight: 700; margin-right: 8px; font-size: .9rem; }
-  label { display: block; font-weight: 600; font-size: .9rem; margin: 12px 0 4px; }
+          background: var(--vurgu); color: var(--vurgu-yazi); font-weight: 700; margin-right: 8px; font-size: var(--size-small); }
+  label { display: block; font-weight: 600; margin: 12px 0 4px; }
   input[type=text], select, textarea {
     width: 100%; padding: 9px 10px; border: 1px solid var(--cizgi); border-radius: 8px;
     background: var(--zemin); color: var(--yazi); font: inherit;
@@ -34,23 +35,23 @@
   input:focus, select:focus, textarea:focus, button:focus-visible { outline: 2px solid var(--vurgu); outline-offset: 1px; }
   .ikili { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
   @media (max-width: 560px) { .ikili { grid-template-columns: 1fr; } }
-  .ipucu { color: var(--soluk); font-size: .85rem; margin: 4px 0 0; }
-  .not { border-left: 4px solid var(--vurgu); background: var(--zemin); padding: 8px 12px; border-radius: 0 8px 8px 0; font-size: .9rem; margin: 10px 0 0; }
+  .ipucu { color: var(--soluk); font-size: var(--size-small); margin: 4px 0 0; }
+  .not { border: 1px solid var(--cizgi); background: var(--zemin); padding: 8px 12px; border-radius: 8px; margin: 10px 0 0; }
   #birak { border: 2px dashed var(--cizgi); border-radius: 12px; padding: 26px 16px; text-align: center; cursor: pointer; }
   #birak.uzerinde { border-color: var(--vurgu); background: var(--zemin); }
   button { font: inherit; border-radius: 8px; border: 1px solid var(--cizgi); background: var(--kart); color: var(--yazi); padding: 8px 14px; cursor: pointer; }
-  button.ana { background: var(--vurgu); color: var(--vurgu-yazi); border-color: var(--vurgu); font-weight: 700; padding: 12px 20px; font-size: 1.05rem; width: 100%; }
+  button.ana { background: var(--vurgu); color: var(--vurgu-yazi); border-color: var(--vurgu); font-weight: 700; padding: 12px 20px; width: 100%; }
   button.clear-form { width: 100%; margin-top: 8px; color: var(--hata); border-color: var(--hata); }
   button:disabled { opacity: .5; cursor: not-allowed; }
   .ogretmen, .madde { display: flex; gap: 8px; margin-bottom: 8px; }
   .ogretmen button, .madde button { flex: none; }
   .madde input[type=number] { flex: none; width: 5.2em; padding: 9px 8px; border: 1px solid var(--cizgi); border-radius: 8px;
     background: var(--zemin); color: var(--yazi); font: inherit; text-align: center; }
-  .madde-baslik { display: flex; gap: 8px; font-weight: 600; font-size: .9rem; margin: 12px 0 4px; }
+  .madde-baslik { display: flex; gap: 8px; font-weight: 600; font-size: var(--size-small); margin: 12px 0 4px; }
   .madde-baslik span:first-child { flex: 1; }
   .madde-baslik span:nth-child(2) { width: 5.2em; text-align: center; }
   .madde-baslik span:last-child { width: 3.4em; }
-  .secmeli { font-weight: 400; color: var(--soluk); font-size: .9rem; }
+  .secmeli { font-weight: 400; color: var(--soluk); font-size: var(--size-small); }
   .konu { border: 1px solid var(--cizgi); border-radius: 8px; margin-bottom: 8px; }
   .konu > summary { padding: 9px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
   .konu > summary span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -63,31 +64,30 @@
   .dagit p { margin: 0; font-weight: 600; }
   .etiket-satir { display: flex; align-items: center; gap: 8px; margin: 12px 0 4px; }
   .etiket-satir label { margin: 0; }
-  button.bilgi { width: 1.6em; height: 1.6em; padding: 0; border-radius: 50%; font: italic 700 .85rem/1 Georgia, serif;
+  button.bilgi { width: 1.6em; height: 1.6em; padding: 0; border-radius: 50%; font: italic 700 var(--size-small)/1 Georgia, serif;
     color: var(--vurgu); border-color: var(--vurgu); flex: none; }
   .bilgi-pencere { max-width: min(460px, calc(100vw - 32px)); padding: 16px 18px; border: 1px solid var(--cizgi);
     border-radius: 12px; background: var(--kart); color: var(--yazi); box-shadow: 0 10px 30px rgba(0, 0, 0, .25); }
   .bilgi-pencere::backdrop { background: rgba(0, 0, 0, .25); }
-  .bilgi-pencere p { margin: 8px 0; white-space: pre-line; font-size: .95rem; }
+  .bilgi-pencere p { margin: 8px 0; white-space: pre-line; }
   .bilgi-pencere button { margin-top: 6px; }
   #tutumToplam { font-weight: 700; margin: 10px 0 0; }
   #tutumToplam.asim { color: var(--hata); }
   .sube { border: 1px solid var(--cizgi); border-radius: 8px; margin-top: 12px; }
   .sube summary { padding: 10px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-  .sube table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  .sube table { width: 100%; border-collapse: collapse; font-size: var(--size-small); }
   .sube td, .sube th { padding: 4px 12px; border-top: 1px solid var(--cizgi); text-align: left; }
   .sube .kaydir { max-height: 260px; overflow-y: auto; }
   .hata { background: var(--hata-zemin); color: var(--hata); border-radius: 8px; padding: 10px 12px; margin-top: 12px; }
   .tamam { color: var(--tamam); font-weight: 600; margin-top: 12px; }
   .radyo { display: flex; gap: 18px; flex-wrap: wrap; }
   .radyo label { font-weight: 400; margin: 0; display: flex; align-items: center; gap: 6px; }
-  footer { color: var(--soluk); font-size: .85rem; text-align: center; margin-top: 20px; }
+  footer { color: var(--soluk); font-size: var(--size-small); text-align: center; margin-top: 20px; }
   header.ust { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
   header.ust img { width: 72px; height: 72px; flex: none; border-radius: 50%; background: #ffffff; }
-  header.ust .okul { color: var(--soluk); font-size: .9rem; margin: 0; }
-  .hakkinda p, .hakkinda li { font-size: .95rem; }
+  header.ust .okul { color: var(--soluk); font-size: var(--size-small); margin: 0; }
   .hakkinda ul { padding-left: 1.2em; margin: 8px 0; }
-  .hakkinda dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 12px 0 0; font-size: .95rem; }
+  .hakkinda dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 12px 0 0; }
   .hakkinda dt { font-weight: 600; }
   .hakkinda dd { margin: 0; }
   a { color: var(--vurgu); }
